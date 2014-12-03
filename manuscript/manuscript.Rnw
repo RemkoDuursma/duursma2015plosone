@@ -1,0 +1,97 @@
+
+
+\documentclass[a4paper]{article}
+
+%--- Load packages. 
+\usepackage{amssymb,amsmath}
+\usepackage{framed}
+
+% avoid ugly indentation of paragraphs
+\usepackage{parskip}
+\usepackage{graphicx}
+
+% open sans font
+\usepackage[default,osfigures,scale=0.95]{opensans}
+
+% subfolder with the figures (within manuscript/)
+\graphicspath{ {./figures/} }
+
+% for author affiliations
+\usepackage{authblk}
+
+% for degree symbol
+\usepackage{gensymb}
+
+% for line numbers
+\usepackage{lineno}
+
+% margin size
+\usepackage{geometry}
+\geometry{verbose,tmargin=3cm,bmargin=3cm,lmargin=3cm,rmargin=3cm}
+
+% for bibtex
+\bibliographystyle{plain}
+
+
+\begin{document}
+
+% Turn line numbers on here.
+%\linenumbers
+
+
+\title{Catchy article title}
+
+\author[1]{Remko Duursma}
+
+\affil[1]{Hawkesbury Institute for the Environment}
+
+\renewcommand\Authands{ and }
+\maketitle
+
+
+%--------------------------------------------------------------------------------------------%
+
+<<preload, echo=FALSE>>=
+library(knitr)
+opts_chunk$set(echo=FALSE)
+@
+
+
+
+%--------------------------------------------------------------------------------------------%
+
+\section*{Summary}
+
+1. The \texttt{plantecophys} R package includes many functions for analysis and modelling of plant leaf gas exchange data. 
+
+2. This paper describes the new package, and gives examples on its use in plant ecophysiological research. The package makes technically difficult calculations easily accessible for many users. 
+
+3. We briefly describe functions for modelling C3 leaf gas exchange with the coupled photosynthesis-stomatal conductance model, fitting of A-Ci curves, modelling C4 photosynthesis, numerical solution of optimal stomatal behaviour, and energy balance calculations using the Penman-Monteith equation.
+
+
+
+\section*{Introduction}
+
+Time to cite some papers, some folks said so \cite{schenk_rooting_2002}, and some others as well \cite{mokany_critical_2006}.
+
+
+%--------------------------------------------------------------------------------------------%
+
+
+
+\clearpage
+\section{Figures}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.99\textwidth]{figure1.pdf}
+    \caption{Standard output from the \texttt{fitaci} function. $A_net$ is the net photosynthetic rate, $C_i$ the intercellular CO$_2$ concentration. Symbols are measurements, the line the fitted Farquhar model of photosynthesis.}
+    \label{fig:figure1}
+\end{figure}
+
+
+
+\clearpage
+\bibliography{references}
+
+\end{document}
