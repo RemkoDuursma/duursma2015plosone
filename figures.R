@@ -11,7 +11,6 @@ figure1 <- function(){
   plot(f)
   
 }
-to.pdf(figure1(), filename="manuscript/figures/figure1.pdf")
 
 
 
@@ -41,6 +40,5 @@ figure2 <- function(){
          lwd=c(2,2,-1),pch=c(-1,-1,19), pt.cex=c(-1,-1,1.1),
          col=c("blue","forestgreen","red"), inset=0.01, cex=1.1, bty='n')
 }
-to.pdf(figure2(), filename="manuscript/figures/figure2.pdf")
 
   

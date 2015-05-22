@@ -1,0 +1,128 @@
+---
+title: plantecophys - an R package for analysis and modelling of leaf gas exchange data
+author: ''
+date: ''
+output:
+  word_document:
+    reference_docx: manuscriptstyle.docx
+  pdf_document: default
+  html_document:
+    number_sections: yes
+csl: plos-one.csl
+bibliography: references.bib
+---
+
+\
+Remko A. Duursma^1^
+
+\
+^1^ Hawkesbury Institute for the Environment, University of Western Sydney, Locked Bag 1797, Penrith, NSW, Australia
+
+\
+*Corresponding author*: 
+Remko Duursma
+E: remkoduursma@gmail.com
+T: +61(0)422096908
+
+
+
+```{r echo=FALSE, message=FALSE}
+# Two useful packages for printing numbers, accessing content of objects.
+library(broom)
+library(reporttools)
+
+# mine
+library(plantecophys)
+
+# figures
+source("figures.R")
+
+# Do calculations here, create objects that we can use throughout the paper.
+
+# Or, place them all in a separate script:
+# source("manuscript_calcs.R")
+
+# Shorthand function to print numbers with two decimal points (and retain trailing zeroes)
+f <- function(x, digits=2)sprintf(x, fmt=paste0("%.",digits,"f"))
+
+# Nice function to format P values.
+pval <- function(...)formatPval(..., includeEquality=TRUE)
+
+# Set Flag to include figures in text or not.
+includeFigs <- TRUE
+
+# This document can be compiled with the 'Knit Word' button in Rstudio, or:
+# library(rmarkdown)
+# render("manuscript.Rmd", "word_document", "manuscript.docx")
+```
+
+
+
+
+# Abstract {.unnumbered}
+
+1. The plantecophys R package includes many functions for analysis and modelling of plant leaf gas exchange data.
+
+2. This paper describes the new package, and gives examples on its use in plant ecophysiological research. The package makes technically difficult calculations easily accessible for many users. 
+
+3. We briefly describe functions for modelling C3 leaf gas exchange with the coupled photosynthesis-stomatal conductance model, fitting of A-Ci curves, modelling C4 photosynthesis, numerical solution of optimal stomatal behaviour, and energy balance calculations using the Penman-Monteith equation.
+
+
+
+
+# Introduction
+
+The Farquhar model of photosynthesis is widely used [@Farquhar1980]. Various methods exist to fit the model to data. We have implemented `fitaci`, which fits the model in two different ways. The function `Aci` simulates the A-Ci curve.
+
+The intersection of the supply and demand curves of photosynthesis gives the operating intercellular CO~2~ concentration [@Farquhar1982]. This is solved by the `Photosyn` function. 
+
+Implementation of several stomatal conductance models, including [@ballberry1987; @leuning1995; @medlyn2011].
+
+We have used the code in several of our papers, including [@medlyn2011; @duursma2013; @duursma2014].
+
+Full numerical optimization of the Cowan-Farquhar hypothesis. We have used this code in [@medlyn2011], and is very similar to that used by [@buckley2014].
+
+
+# Design and implementation
+
+## Subheader text
+Curabitur suscipit, orci ac luctus pellentesque, lacus quam lobortis leo, sit amet rhoncus arcu dolor in felis. Morbi suscipit ullamcorper velit, vitae facilisis ligula tincidunt eu. Mauris molestie metus metus, sit amet eleifend mi volutpat sit amet. Nam dignissim ipsum eu tellus malesuada dignissim. Integer eleifend id metus vitae eleifend. Aliquam ultricies mi a eros vulputate, sit amet venenatis ante suscipit. Morbi vehicula sed nisi vitae semper. In et libero ac magna tincidunt mattis. Duis et enim eu dui scelerisque ullamcorper. Praesent pulvinar erat vitae bibendum iaculis. Maecenas dignissim ante nec dui vehicula dictum. Donec ac sodales arcu. Morbi nec lacus luctus, ultrices lacus vitae, rutrum justo.
+
+## More methods subheader
+Aliquam ut ligula at nulla mattis rutrum. Duis dictum tempus diam ac tincidunt. Vivamus bibendum, augue non bibendum porta, metus orci lacinia justo, vitae consectetur ipsum nisl at libero. In convallis sem id dui blandit, id placerat libero molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed malesuada aliquam risus, pharetra pharetra lorem tincidunt vitae. Ut lobortis lorem eu tortor sollicitudin, et consectetur lorem tincidunt. Morbi ut ligula vitae felis convallis cursus. Fusce placerat nisl et mi imperdiet viverra. In semper nibh sollicitudin tortor commodo pretium. Vestibulum ultricies dignissim sollicitudin. Vivamus tristique pellentesque ante vitae tempor. Morbi facilisis urna vitae sapien blandit feugiat. Integer dapibus ut ex id dignissim,
+
+
+# Results
+
+Aliquam ut ligula at nulla mattis rutrum. Duis dictum tempus diam ac tincidunt. Vivamus bibendum, augue non bibendum porta, metus orci lacinia justo, vitae consectetur ipsum nisl at libero. In convallis sem id dui blandit, id placerat libero molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed malesuada aliquam risus, pharetra pharetra lorem tincidunt vitae. Ut lobortis lorem eu tortor sollicitudin, et consectetur lorem tincidunt. Morbi ut ligula vitae felis convallis cursus. Fusce placerat nisl et mi imperdiet viverra. In semper nibh sollicitudin tortor commodo pretium. Vestibulum ultricies dignissim sollicitudin. Vivamus tristique pellentesque ante vitae tempor. Morbi facilisis urna vitae sapien blandit feugiat. Integer dapibus ut ex id dignissim.
+
+
+# Availability and future directions
+
+
+Curabitur semper nisl eu turpis tempus molestie. Suspendisse potenti. Proin laoreet nibh ac nisi iaculis, at efficitur augue tincidunt. Cras mi lectus, maximus a venenatis eget, pellentesque vel erat. Cras tincidunt, quam ultricies feugiat condimentum, velit ligula tincidunt velit, id venenatis lacus risus id sapien. Ut pulvinar quam ut faucibus ultricies. Ut quis enim et eros hendrerit dictum. Nunc tempus magna vel ante convallis pretium. Praesent sit amet risus vestibulum justo ultrices ultricies vel eu metus. In aliquam ultrices diam, ut tempus mi ultrices ut. Sed id lacus ac sem ullamcorper maximus ut eu leo.
+
+\
+Aliquam ut ligula at nulla mattis rutrum. Duis dictum tempus diam ac tincidunt. Vivamus bibendum, augue non bibendum porta, metus orci lacinia justo, vitae consectetur ipsum nisl at libero. In convallis sem id dui blandit, id placerat libero molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed malesuada aliquam risus, pharetra pharetra lorem tincidunt vitae. Ut lobortis lorem eu tortor sollicitudin, et consectetur lorem tincidunt. Morbi ut ligula vitae felis convallis cursus. Fusce placerat nisl et mi imperdiet viverra. In semper nibh sollicitudin tortor commodo pretium. Vestibulum ultricies dignissim sollicitudin. Vivamus tristique pellentesque ante vitae tempor. Morbi facilisis urna vitae sapien blandit feugiat. Integer dapibus ut ex id dignissim.
+
+# Acknowledgements {.unnumbered}
+We thank lots of people.
+
+# Figures {.unnumbered}
+
+
+```{r fig.width=6, fig.height=6, echo=FALSE, message=FALSE, eval=includeFigs, warn=FALSE}
+figure1()
+```
+
+**Figure 1**. Standard output from the `fitaci` function. A~net~ is the net photosynthetic rate, C~i~ the intercellular CO~2~ concentration. Symbols are measurements, the line the fitted Farquhar model of photosynthesis.
+
+```{r fig.width=6, fig.height=6, echo=FALSE, message=FALSE, eval=includeFigs, warn=FALSE}
+figure2()
+```
+
+** Figure 2**. The intersection of the supply and demand curves of photosynthesis as solved by `Photosyn`.
+
+
+# References {.unnumbered}
+
