@@ -24,6 +24,14 @@ Remko Duursma
 E: remkoduursma@gmail.com
 T: +61(0)422096908
 
+<!---
+For Submission to PLOS one
+e.g. http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217
+http://journals.plos.org/ploscollections/article?id=10.1371/journal.pcbi.1003929
+http://journals.plos.org/ploscollections/article?id=10.1371/journal.pcbi.1003270
+and see: http://journals.plos.org/plosone/s/submission-guidelines
+(Methods, software, databases, and tools)
+--->
 
 
 ```{r echo=FALSE, message=FALSE}
