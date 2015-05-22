@@ -1,5 +1,10 @@
 
 
+% For Submission to PLOS one
+% e.g. http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217
+% and see: http://journals.plos.org/plosone/s/submission-guidelines
+% (Methods, software, databases, and tools)
+
 \documentclass[a4paper]{article}
 
 %--- Load packages. 
@@ -65,7 +70,7 @@ opts_chunk$set(echo=FALSE)
 
 \section*{Summary}
 
-1. The \texttt{plantecophys} R package includes many functions for analysis and modelling of plant leaf gas exchange data. 
+1. The \texttt{plantecophys} R package includes many functions for analysis and modelling of plant leaf gas exchange data.
 
 2. This paper describes the new package, and gives examples on its use in plant ecophysiological research. The package makes technically difficult calculations easily accessible for many users. 
 
@@ -85,7 +90,7 @@ Implementation of several stomatal conductance models, including \cite{ballberry
 
 We have used the code in several of our papers, including \cite{medlyn2011,duursma2013,duursma2014}
 
-Full numerical optimizatin of the Cowan-Farquhar hypothesis. We have used this code in \cite{medlyn2011}, and is very similar to that used by \cite{buckley2014}.
+Full numerical optimization of the Cowan-Farquhar hypothesis. We have used this code in \cite{medlyn2011}, and is very similar to that used by \cite{buckley2014}.
 
 
 
