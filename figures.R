@@ -2,20 +2,10 @@
 source("R/functions.R")
 library(plantecophys)
 
-figure1 <- function(){
-  
-  
-  f <- fitaci(acidata1)
-  
-  par(mar=c(5,5,1,1), cex.lab=1.3, cex.axis=1)
-  plot(f)
-  
-}
-
 
 
 # Sharkey figure
-figure2 <- function(){
+figure1 <- function(){
   ci <- seq(50, 800, length=101)
   
   acirun <- Aci(Ci=ci)
@@ -39,6 +29,18 @@ figure2 <- function(){
                           "Operating point"),
          lwd=c(2,2,-1),pch=c(-1,-1,19), pt.cex=c(-1,-1,1.1),
          col=c("blue","forestgreen","red"), inset=0.01, cex=1.1, bty='n')
+}
+
+
+# example output fitaci
+figure2 <- function(){
+  
+  
+  f <- fitaci(acidata1)
+  
+  par(mar=c(5,5,1,1), cex.lab=1.3, cex.axis=1)
+  plot(f)
+  
 }
 
   

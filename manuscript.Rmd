@@ -69,20 +69,53 @@ includeFigs <- TRUE
 
 # Abstract {.unnumbered}
 
-1. The plantecophys R package includes many functions for analysis and modelling of plant leaf gas exchange data.
+1. The plantecophys R package includes many functions for analysis and modelling of plant leaf gas exchange data, as commonly collected with a portable gas exchange instrument.
 
-2. This paper describes the new package, and gives examples on its use in plant ecophysiological research. The package makes technically difficult calculations easily accessible for many users. 
+2. This paper describes the functionality and implementation of the new package, and gives examples on its use in plant ecophysiological research. The package makes technically difficult calculations easily accessible for many users.
 
-3. We briefly describe functions for modelling C3 leaf gas exchange with the coupled photosynthesis-stomatal conductance model, fitting of A-Ci curves, modelling C4 photosynthesis, numerical solution of optimal stomatal behaviour, and energy balance calculations using the Penman-Monteith equation.
+3. I briefly describe functions for modelling C3 leaf gas exchange with the coupled photosynthesis-stomatal conductance model, fitting of the Farquhar model of photosynthesis to measurements of photosynthesis-CO~2~ response curves ('A-Ci curves'), modelling C4 photosynthesis, numerical solution of optimal stomatal behaviour, and energy balance calculations using the Penman-Monteith equation.
 
 
 
 
 # Introduction
 
-The Farquhar model of photosynthesis is widely used [@Farquhar1980]. Various methods exist to fit the model to data. We have implemented `fitaci`, which fits the model in two different ways. The function `Aci` simulates the A-Ci curve.
+Wealth of leaf gas exchange data collected in the field of plant ecological physiology. Especially since the advent of portable, easy to use, gas exchange instruments such as the Licor-6400.
 
-The intersection of the supply and demand curves of photosynthesis gives the operating intercellular CO~2~ concentration [@Farquhar1982]. This is solved by the `Photosyn` function. 
+These data are used to estimate important plant traits such as Vcmax&Jmax, as well to study responses of stomatal conductance to key environmental drivers.
+
+The Farquhar model of photosynthesis is widely used [@Farquhar1980]. Various methods exist to fit the model to data, which requires some finesse because the model is not a single non-linear equation, but instead a minimum function that is sometimes difficult to fit (Gu), and sample sizes collected are often small due to time constraints in the field. We do not repeat a description of the Farquhar model here, it has been described many times. But generally it is of the form,
+
+(1)
+$$A_n = min(A_c, A_j) - R_d$$
+
+where A~c~ is the gross photosynthesis rate when Rubisco activity is limiting, A~j~ when RuBP-regeneration is limiting, and R~d~ the rate of dark respiration. A~c~ and A~j~ are non-linear functions of the intercellular CO~2~ concentration (C~i~), both of the form $k_1(C_i\Gamma^∗)/(k_2 + C_i)$, where $\Gamma^∗$ is the CO~2~ compensation point without R~d~, and k~1~ and k~2~ are different parameter combinations for A~c~ and A~j~. The details of these functions and the temperature dependence of the parameters are described elsewhere (e.g. Medlyn et al., 2002).
+As mentioned above, the parameters Vcmax and Jmax that are embedded in Eq. 1 are not easy to estimate, moreover because the various dependencies of the parameters on leaf temperature must be accounted for.
+
+Once the A-Ci curve is fitted, we can use the Farquhar (FvC) model to simulate the relationship between substrate availability (for which Ci is as a proxy) and rates of photosynthetic CO2 assimilation. The intercellular CO2 concentration, in turn, is set by stomatal opening, which modulates the diffusion of CO2 into leaves via Fick's law:
+
+(2)
+$$ A_n = g_s(C_a - C_i) $$
+
+We now have two equations for the photosynthesis rate. The demand-based one (Eq. 1) and the diffusion-based one. At steady state these two should be equal, which can be graphically shown as in Fig. 1 (cf. [@Farquhar1982]). 
+
+The next step is to include a model of g~s~ that allows for the known response of g~s~ to drivers including vapour pressure deficit and atmospheric CO~2~ concentration (C~a~). The most successful, though empirical, suite of gs models is the Ball-Berry class of models where gs is modelled as a function of A~n~ and D and CO2. This way, effects of leaf temperature and PPFD - both of which are known to affect gs - are modelled through the dependency of photosynthesis on these drivers. Thus the third equation is,
+
+(3)
+$$ g_s = g_0 + g_1 \frac{A_n}{C_a}f(D)$$
+
+Through Eqs. 1-3 we now have the coupled leaf gas exchange model, which allows modelling of A, g_s and leaf transpiration rate in response to all major environmental drivers (except soil water limitation), and key leaf traits (g1, Vcmax, Jmax, Rd). This coupled leaf gas exchange model can be solved as a quadratic equation, yielding the setpoint C~i~ (Fig. 1), and has found use in many applications (cite). In the next section we describe the various options for f(D) as well as an independent approach assuming that stomatal conductance is optimized to maximize photosynthesis at a given water expenditure (cf. Cowan, Medlyn).
+
+Despite the widespread use of a standard instrument to collect data, tools to analyze the data are scattered and subject to little standardization. Some excel sheets here and there, etc., but we need a solid set of tools in the widely used R language. I here describe the plantecophys package, implemented in the R language.
+
+
+
+# Design and implementation
+
+## The main functions
+We have implemented `fitaci`, which fits the model in two different ways. The function `Aci` simulates the A-Ci curve.
+
+The intersection of the supply and demand curves of photosynthesis gives the operating intercellular CO~2~ concentration. This is solved by the `Photosyn` function. 
 
 Implementation of several stomatal conductance models, including [@ballberry1987; @leuning1995; @medlyn2011].
 
@@ -90,11 +123,6 @@ We have used the code in several of our papers, including [@medlyn2011; @duursma
 
 Full numerical optimization of the Cowan-Farquhar hypothesis. We have used this code in [@medlyn2011], and is very similar to that used by [@buckley2014].
 
-
-# Design and implementation
-
-## Subheader text
-Curabitur suscipit, orci ac luctus pellentesque, lacus quam lobortis leo, sit amet rhoncus arcu dolor in felis. Morbi suscipit ullamcorper velit, vitae facilisis ligula tincidunt eu. Mauris molestie metus metus, sit amet eleifend mi volutpat sit amet. Nam dignissim ipsum eu tellus malesuada dignissim. Integer eleifend id metus vitae eleifend. Aliquam ultricies mi a eros vulputate, sit amet venenatis ante suscipit. Morbi vehicula sed nisi vitae semper. In et libero ac magna tincidunt mattis. Duis et enim eu dui scelerisque ullamcorper. Praesent pulvinar erat vitae bibendum iaculis. Maecenas dignissim ante nec dui vehicula dictum. Donec ac sodales arcu. Morbi nec lacus luctus, ultrices lacus vitae, rutrum justo.
 
 ## More methods subheader
 Aliquam ut ligula at nulla mattis rutrum. Duis dictum tempus diam ac tincidunt. Vivamus bibendum, augue non bibendum porta, metus orci lacinia justo, vitae consectetur ipsum nisl at libero. In convallis sem id dui blandit, id placerat libero molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed malesuada aliquam risus, pharetra pharetra lorem tincidunt vitae. Ut lobortis lorem eu tortor sollicitudin, et consectetur lorem tincidunt. Morbi ut ligula vitae felis convallis cursus. Fusce placerat nisl et mi imperdiet viverra. In semper nibh sollicitudin tortor commodo pretium. Vestibulum ultricies dignissim sollicitudin. Vivamus tristique pellentesque ante vitae tempor. Morbi facilisis urna vitae sapien blandit feugiat. Integer dapibus ut ex id dignissim,
@@ -122,14 +150,14 @@ We thank lots of people.
 ```{r fig.width=6, fig.height=6, echo=FALSE, message=FALSE, eval=includeFigs, warn=FALSE}
 figure1()
 ```
+** Figure 1**. The intersection of the supply and demand curves of photosynthesis. The `Photosyn` function solves for C~i~ if g~s~, V~cmax~, J~max~ and R~d~ (and other parameters to the FvC model) are known.
 
-**Figure 1**. Standard output from the `fitaci` function. A~net~ is the net photosynthetic rate, C~i~ the intercellular CO~2~ concentration. Symbols are measurements, the line the fitted Farquhar model of photosynthesis.
 
 ```{r fig.width=6, fig.height=6, echo=FALSE, message=FALSE, eval=includeFigs, warn=FALSE}
 figure2()
 ```
+**Figure 2**. Standard output from the `fitaci` function. A~net~ is the net photosynthetic rate, C~i~ the intercellular CO~2~ concentration. Symbols are measurements, the line the fitted Farquhar model of photosynthesis.
 
-** Figure 2**. The intersection of the supply and demand curves of photosynthesis as solved by `Photosyn`.
 
 
 # References {.unnumbered}
