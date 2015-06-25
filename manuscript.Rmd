@@ -84,7 +84,9 @@ Wealth of leaf gas exchange data collected in the field of plant ecological phys
 
 These data are used to estimate important plant traits such as Vcmax&Jmax, as well to study responses of stomatal conductance to key environmental drivers.
 
-The Farquhar model of photosynthesis is widely used [@Farquhar1980]. Various methods exist to fit the model to data, which requires some finesse because the model is not a single non-linear equation, but instead a minimum function that is sometimes difficult to fit (Gu), and sample sizes collected are often small due to time constraints in the field. We do not repeat a description of the Farquhar model here, it has been described many times. But generally it is of the form,
+The photosynthesis model of Farquhar, von Caemmerer and Berry [@farquhar1980] (the 'FvC model') is very widely used in interpreting leaf gas exchange data (cites), up to predicting carbon uptake by vegetation at a global scale. The key prediction of the model is the response of photosynthesis to [CO~2~] in the intercellular airspaces (Ci). In turn, Ci is controlled the result of the balance between diffusion of CO2 through the stomata, and the uptake of CO2 by photosynthesis. To employ the model, it is generally fit to observations of net photosynthesis along a range of [CO2] concentrations. 
+
+Various methods exist to fit the model to data, which requires some finesse because the model is not a single non-linear equation, but instead a minimum function that is sometimes difficult to fit (Gu), and sample sizes collected are often small due to time constraints in the field. We do not repeat a description of the Farquhar model here, it has been described many times. But generally it is of the form,
 
 (1)
 $$A_n = min(A_c, A_j) - R_d$$
@@ -92,12 +94,12 @@ $$A_n = min(A_c, A_j) - R_d$$
 where A~c~ is the gross photosynthesis rate when Rubisco activity is limiting, A~j~ when RuBP-regeneration is limiting, and R~d~ the rate of dark respiration. A~c~ and A~j~ are non-linear functions of the intercellular CO~2~ concentration (C~i~), both of the form $k_1(C_i\Gamma^∗)/(k_2 + C_i)$, where $\Gamma^∗$ is the CO~2~ compensation point without R~d~, and k~1~ and k~2~ are different parameter combinations for A~c~ and A~j~. The details of these functions and the temperature dependence of the parameters are described elsewhere (e.g. Medlyn et al., 2002).
 As mentioned above, the parameters Vcmax and Jmax that are embedded in Eq. 1 are not easy to estimate, moreover because the various dependencies of the parameters on leaf temperature must be accounted for.
 
-Once the A-Ci curve is fitted, we can use the Farquhar (FvC) model to simulate the relationship between substrate availability (for which Ci is as a proxy) and rates of photosynthetic CO2 assimilation. The intercellular CO2 concentration, in turn, is set by stomatal opening, which modulates the diffusion of CO2 into leaves via Fick's law:
+Once the A-Ci curve is fitted, we can use the Farquhar (FvC) model to simulate the relationship between substrate availability (for which Ci is as a proxy) and rates of photosynthetic CO2 assimilation. 
 
 (2)
 $$ A_n = g_s(C_a - C_i) $$
 
-We now have two equations for the photosynthesis rate. The demand-based one (Eq. 1) and the diffusion-based one. At steady state these two should be equal, which can be graphically shown as in Fig. 1 (cf. [@Farquhar1982]). 
+We now have two equations for the photosynthesis rate. The demand-based one (Eq. 1) and the diffusion-based one. At steady state these two should be equal, which can be graphically shown as in Fig. 1 (cf. [@farquhar1982]). 
 
 The next step is to include a model of g~s~ that allows for the known response of g~s~ to drivers including vapour pressure deficit and atmospheric CO~2~ concentration (C~a~). The most successful, though empirical, suite of gs models is the Ball-Berry class of models where gs is modelled as a function of A~n~ and D and CO2. This way, effects of leaf temperature and PPFD - both of which are known to affect gs - are modelled through the dependency of photosynthesis on these drivers. Thus the third equation is,
 
@@ -108,41 +110,49 @@ Through Eqs. 1-3 we now have the coupled leaf gas exchange model, which allows m
 
 Despite the widespread use of a standard instrument to collect data, tools to analyze the data are scattered and subject to little standardization. Some excel sheets here and there, etc., but we need a solid set of tools in the widely used R language. I here describe the plantecophys package, implemented in the R language.
 
+We have used the code in several of our papers, including [@medlyn2011; @duursma2013; @duursma2014].
 
 
 # Design and implementation
 
 ## The main functions
-We have implemented `fitaci`, which fits the model in two different ways. The function `Aci` simulates the A-Ci curve.
+
+We have implemented `fitaci`, which fits the FvC model in two different ways. A widely used published method requires the user to specify the transition of Vcmax to Jmax limitation [@sharkey2007], a process that both prevents batch analysis and is arbitrary. Another method (http://leafweb.ornl.gov/) requires online submission of data and fits the model without much control or knowledge of the fitting process [@gu2010]. 
+
+Details about it : fits the hyperbolic min function simultaneously. Retrieves estimates of Vcmax, Jmax and Rd (the latter can also be held constant at a known value, in which case only Jmax and Vcmax are fit). Optionally can specify the transition point, so that the Vcmax-limited part is fit independent of the Jmax-limited part. Returns parameter estimates and standard errors, and includes a plot method. Fig 2. is made like this:
+
+```
+f <- fitaci(mydata)
+plot(f)
+```
+
+
+
+The function `Aci` simulates the A-Ci curve.
 
 The intersection of the supply and demand curves of photosynthesis gives the operating intercellular CO~2~ concentration. This is solved by the `Photosyn` function. 
 
 Implementation of several stomatal conductance models, including [@ballberry1987; @leuning1995; @medlyn2011].
 
-We have used the code in several of our papers, including [@medlyn2011; @duursma2013; @duursma2014].
+
 
 Full numerical optimization of the Cowan-Farquhar hypothesis. We have used this code in [@medlyn2011], and is very similar to that used by [@buckley2014].
 
 
-## More methods subheader
-Aliquam ut ligula at nulla mattis rutrum. Duis dictum tempus diam ac tincidunt. Vivamus bibendum, augue non bibendum porta, metus orci lacinia justo, vitae consectetur ipsum nisl at libero. In convallis sem id dui blandit, id placerat libero molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed malesuada aliquam risus, pharetra pharetra lorem tincidunt vitae. Ut lobortis lorem eu tortor sollicitudin, et consectetur lorem tincidunt. Morbi ut ligula vitae felis convallis cursus. Fusce placerat nisl et mi imperdiet viverra. In semper nibh sollicitudin tortor commodo pretium. Vestibulum ultricies dignissim sollicitudin. Vivamus tristique pellentesque ante vitae tempor. Morbi facilisis urna vitae sapien blandit feugiat. Integer dapibus ut ex id dignissim,
+## Example analysis
 
+fit aci curve, estimate g1, model photosynthesis and transpiration for a met dataset?
 
-# Results
-
-Aliquam ut ligula at nulla mattis rutrum. Duis dictum tempus diam ac tincidunt. Vivamus bibendum, augue non bibendum porta, metus orci lacinia justo, vitae consectetur ipsum nisl at libero. In convallis sem id dui blandit, id placerat libero molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed malesuada aliquam risus, pharetra pharetra lorem tincidunt vitae. Ut lobortis lorem eu tortor sollicitudin, et consectetur lorem tincidunt. Morbi ut ligula vitae felis convallis cursus. Fusce placerat nisl et mi imperdiet viverra. In semper nibh sollicitudin tortor commodo pretium. Vestibulum ultricies dignissim sollicitudin. Vivamus tristique pellentesque ante vitae tempor. Morbi facilisis urna vitae sapien blandit feugiat. Integer dapibus ut ex id dignissim.
 
 
 # Availability and future directions
 
+The package is freely available under the XXX license (check CRAN). The development version is under version control at bitbucket. New changes are made available frequently.
 
-Curabitur semper nisl eu turpis tempus molestie. Suspendisse potenti. Proin laoreet nibh ac nisi iaculis, at efficitur augue tincidunt. Cras mi lectus, maximus a venenatis eget, pellentesque vel erat. Cras tincidunt, quam ultricies feugiat condimentum, velit ligula tincidunt velit, id venenatis lacus risus id sapien. Ut pulvinar quam ut faucibus ultricies. Ut quis enim et eros hendrerit dictum. Nunc tempus magna vel ante convallis pretium. Praesent sit amet risus vestibulum justo ultrices ultricies vel eu metus. In aliquam ultrices diam, ut tempus mi ultrices ut. Sed id lacus ac sem ullamcorper maximus ut eu leo.
 
-\
-Aliquam ut ligula at nulla mattis rutrum. Duis dictum tempus diam ac tincidunt. Vivamus bibendum, augue non bibendum porta, metus orci lacinia justo, vitae consectetur ipsum nisl at libero. In convallis sem id dui blandit, id placerat libero molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed malesuada aliquam risus, pharetra pharetra lorem tincidunt vitae. Ut lobortis lorem eu tortor sollicitudin, et consectetur lorem tincidunt. Morbi ut ligula vitae felis convallis cursus. Fusce placerat nisl et mi imperdiet viverra. In semper nibh sollicitudin tortor commodo pretium. Vestibulum ultricies dignissim sollicitudin. Vivamus tristique pellentesque ante vitae tempor. Morbi facilisis urna vitae sapien blandit feugiat. Integer dapibus ut ex id dignissim.
 
 # Acknowledgements {.unnumbered}
-We thank lots of people.
+Thanks to John Drake for extensive testing, David Ellsworth, Belinda Medlyn, Martin de Kauwe for discussion on fitting A-Ci curves.
 
 # Figures {.unnumbered}
 
