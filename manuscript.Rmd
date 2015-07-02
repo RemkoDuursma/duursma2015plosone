@@ -69,11 +69,7 @@ includeFigs <- TRUE
 
 # Abstract {.unnumbered}
 
-1. The plantecophys R package includes many functions for analysis and modelling of plant leaf gas exchange data, as commonly collected with a portable gas exchange instrument.
-
-2. This paper describes the functionality and implementation of the new package, and gives examples on its use in plant ecophysiological research. The package makes technically difficult calculations easily accessible for many users.
-
-3. I briefly describe functions for modelling C3 leaf gas exchange with the coupled photosynthesis-stomatal conductance model, fitting of the Farquhar model of photosynthesis to measurements of photosynthesis-CO~2~ response curves ('A-Ci curves'), modelling C4 photosynthesis, numerical solution of optimal stomatal behaviour, and energy balance calculations using the Penman-Monteith equation.
+Here I present the R package 'plantecophys', a toolkit to analyse and model leaf gas exchange data, a cornerstone of plant ecophysiological research. Measurements of leaf photosynthesis and transpiration are routinely collected with portable gas exchange instruments, and analyzed with a few key models. These models include the Farquhar-von Caemmerer-Berry model of leaf photosynthesis, the Ball-Berry models of stomatal conductance, and the coupled leaf gas exchange model which combines the supply and demand functions for CO2 in the leaf. The 'plantecophys' R package includes functions both for fitting these models to measurements, as well as simulating from the fitted models to aid in interpreting experimental data. Here I describe the functionality and implementation of the new package, and give examples on its use in plant ecophysiological research. The package makes technically challenging calculations easily accessible for many users. I briefly describe functions for modelling C3 leaf gas exchange with the coupled photosynthesis-stomatal conductance model, fitting of the Farquhar model of photosynthesis to measurements of photosynthesis-CO~2~ response curves ('A-Ci curves'), modelling C4 photosynthesis, numerical solution of optimal stomatal behaviour, and energy balance calculations using the Penman-Monteith equation. The package is freely available on CRAN, and a development version is hosted at http://www.bitbucket.org/remkoduursma/plantecophys.
 
 
 
@@ -117,42 +113,85 @@ We have used the code in several of our papers, including [@medlyn2011; @duursma
 
 ## The main functions
 
-We have implemented `fitaci`, which fits the FvC model in two different ways. A widely used published method requires the user to specify the transition of Vcmax to Jmax limitation [@sharkey2007], a process that both prevents batch analysis and is arbitrary. Another method (http://leafweb.ornl.gov/) requires online submission of data and fits the model without much control or knowledge of the fitting process [@gu2010]. 
+The main functions in the package include functions to : 
+
+- Fit, summarize, plot and simulate photosynthesis-[CO~2~] response curves (known as 'A-Ci' curves)
+- Fit Ball-Berry type models of stomatal conductance
+- Estimate optimal stomatal conductance with a numerical implementation of the Cowan-Farquhar hypothesis
+- Simulate leaf photosynthesis and transpiration with the coupled leaf gas exchange model
+- Estimate leaf temperature from energy balance, when a significant leaf boundary layer is present
+- Convert between commonly used units (relative humidity, vapour pressure deficit, dewpoint temperature).
+
+
+## Language
+
+The 'plantecophys' package is implemented in native R, and has no dependencies on other packages. As such it compiles easily, and is highly portable. The source code is maintained with git version control, and is hosted in an online repository (http://www.bitbucket.org/remkoduursma/plantecophys). The repository includes an issue tracker, where users can suggest changes or report bugs.
+
+
+
+## Results
+
+
+### Fitting A-Ci curves
+
+We have implemented `fitaci`, which fits the FvC model in two different ways. A widely used published method requires the user to specify the transition of Vcmax to Jmax limitation [@sharkey2007], a process that both prevents batch analysis and is arbitrary. Another method (http://leafweb.ornl.gov/) requires online submission of data and fits the model without much control or knowledge of the fitting process [@gu2010]. Undoubtedly many more implementations of the fitting process have been developed over the years, but few of these are made publicly available (but see e.g. https://github.com/mdekauwe/FitFarquharModel). 
 
 Details about it : fits the hyperbolic min function simultaneously. Retrieves estimates of Vcmax, Jmax and Rd (the latter can also be held constant at a known value, in which case only Jmax and Vcmax are fit). Optionally can specify the transition point, so that the Vcmax-limited part is fit independent of the Jmax-limited part. Returns parameter estimates and standard errors, and includes a plot method. Fig 2. is made like this:
+
 
 ```
 f <- fitaci(mydata)
 plot(f)
 ```
 
-
-
 The function `Aci` simulates the A-Ci curve.
 
-The intersection of the supply and demand curves of photosynthesis gives the operating intercellular CO~2~ concentration. This is solved by the `Photosyn` function. 
+### Fitting stomatal conductance models
 
 Implementation of several stomatal conductance models, including [@ballberry1987; @leuning1995; @medlyn2011].
 
 
+### Coupled leaf gas exchange model
+
+The intersection of the supply and demand curves of photosynthesis gives the operating intercellular CO~2~ concentration. This is solved by the `Photosyn` function. 
+
+
+### Numerical solution of optimal stomatal conductance
 
 Full numerical optimization of the Cowan-Farquhar hypothesis. We have used this code in [@medlyn2011], and is very similar to that used by [@buckley2014].
 
 
-## Example analysis
+# Conclusions
 
-fit aci curve, estimate g1, model photosynthesis and transpiration for a met dataset?
+We need a publicly available, open source, set of tools to analyze these data which form the cornerstone of plant physiological ecology. Though alternative methods exist to fit A-Ci curves and other details of the implementations can see alternatives, the plantecophys package provides a platform where such methods comparisons can be made. The R language is now widely used, and many users can make changes to the code and recompile the package. 
+We have included a set of functions that are key to ecophysiological research. There is certainly scope, and interest, to increase the array of tools included in the package. 
 
 
 
-# Availability and future directions
 
-The package is freely available under the XXX license (check CRAN). The development version is under version control at bitbucket. New changes are made available frequently.
+# Availability and requirements
+
+**Project name**: plantecophys
+
+**Project Stable Release**: cran.r-project.org/package=plantecophys
+
+**Project Home Page**: http://www.bitbucket.org/remkoduursma/plantecophys
+
+**Project Issue Tracker**: http://www.bitbucket.org/remkoduursma/plantecophys/issues
+
+**Operating System(s)**: Platform Independent
+
+**Programming Language(s)**: R
+
+**Other Requirements**: none
 
 
 
 # Acknowledgements {.unnumbered}
-Thanks to John Drake for extensive testing, David Ellsworth, Belinda Medlyn, Martin de Kauwe for discussion on fitting A-Ci curves.
+Thanks to John Drake for extensive testing. David Ellsworth, Belinda Medlyn, Martin de Kauwe are acknowledged for discussion on fitting A-Ci curves. Special thanks to Belinda Medlyn whose code in the MAESTRA model provided inspiration for an early version of the Photosyn function. 
+
+
+
 
 # Figures {.unnumbered}
 
