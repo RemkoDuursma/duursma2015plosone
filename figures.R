@@ -5,7 +5,8 @@ library(plantecophys)
 
 figure1 <- function(){
   
-  par(xaxs="i", yaxs="i", cex.lab=1.3, mar=c(5,5,1,1), cex.axis=1)
+  par(xaxs="i", yaxs="i", cex.lab=1.3, mar=c(5,5,1,1), cex.axis=1,
+      mfrow=c(1,2))
   
   ci <- seq(40, 1050, length=101)
   acirun <- Aci(Ci=ci, Vcmax=65, Jmax=130, Rd=1.5)
@@ -25,15 +26,11 @@ figure1 <- function(){
   legend("topleft", c(expression(A[j]),expression(A[c]), expression(A[n]), "Transition point"),
          lwd=c(2,2,2,-1), pch=c(-1,-1,-1,1), pt.cex=c(-1,-1,-1,1.4), col=c("blue","red","black", "black"),
          bty='n')
-}
-
-
-
-
-# Sharkey figure
-figure2 <- function(){
-  ci <- seq(50, 800, length=101)
   
+  ci <- seq(50, 800, length=101)
+  plotlabel("(a)", "topleft")
+  
+  # PAnel b
   acirun <- Aci(Ci=ci)
   
   par(xaxs="i", yaxs="i", cex.lab=1.3, mar=c(5,5,1,1), cex.axis=1)
@@ -49,6 +46,7 @@ figure2 <- function(){
   abline(gc*p$Ca, -gc,  lwd=2, lty=5)
   
   points(p$Ci, p$ALEAF, pch=21, bg="white", cex=1.4)
+  plotlabel("(b)", "topleft")
   
   legend("right", c("Demand function","Supply function","Operating point"),
          lwd=c(2,2,-1),pch=c(-1,-1,1), pt.cex=c(-1,-1,1.4),
@@ -56,8 +54,12 @@ figure2 <- function(){
 }
 
 
+
+
+
+
 # example output fitaci
-figure3 <- function(){
+figure2 <- function(){
   
   
   f <- fitaci(acidata1)
@@ -69,7 +71,7 @@ figure3 <- function(){
 
 
 # FARAO
-figure4 <- function(){
+figure3 <- function(){
   vpds <- seq(0.5,3.5, by=0.5)
   lam <- 0.002
   f <- plantecophys:::OPTfun

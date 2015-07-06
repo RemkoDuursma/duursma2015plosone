@@ -224,31 +224,24 @@ David Ellsworth, Belinda Medlyn, Martin de Kauwe are acknowledged for discussion
 # Figures {.unnumbered}
 
 
-```{r fig.width=6, fig.height=5, echo=FALSE, message=FALSE, eval=includeFigs, warn=FALSE}
+```{r fig.width=8, fig.height=4, echo=FALSE, message=FALSE, eval=includeFigs, warn=FALSE}
 figure1()
 ```
 
-** Figure 1**. Leaf photosynthesis - CO~2~ response curve as modelled with the FvC model. 
+** Figure 1**. (a) Leaf photosynthesis - CO~2~ response curve as modelled with the FvC model. (b) The intersection of the supply and demand curves of photosynthesis. The `Photosyn` function solves for C~i~ if g~s~, V~cmax~, J~max~ and R~d~ (and other parameters to the FvC model) are known.
 
 ```{r fig.width=6, fig.height=5, echo=FALSE, message=FALSE, eval=includeFigs, warn=FALSE}
-suppressWarnings(figure2())
+figure2()
 ```
 
-** Figure 2**. The intersection of the supply and demand curves of photosynthesis. The `Photosyn` function solves for C~i~ if g~s~, V~cmax~, J~max~ and R~d~ (and other parameters to the FvC model) are known.
-
-
-```{r fig.width=6, fig.height=5, echo=FALSE, message=FALSE, eval=includeFigs, warn=FALSE}
-figure3()
-```
-
-**Figure 3**. Standard output from the `fitaci` function. A~net~ is the net photosynthetic rate, C~i~ the intercellular CO~2~ concentration. Symbols are measurements, the line the fitted Farquhar model of photosynthesis.
+**Figure 2**. Standard output from the `fitaci` function. A~net~ is the net photosynthetic rate, C~i~ the intercellular CO~2~ concentration. Symbols are measurements, the line the fitted Farquhar model of photosynthesis.
 
 
 ```{r fig.width=8, fig.height=4, echo=FALSE, message=FALSE, eval=includeFigs, warn=FALSE}
-figure4()
+figure3()
 ```
 
-**Figure 4**. Visualization of the optimal model of stomatal conductance. Provided we have an estimate of the 'cost of water' ($\lambda$, mol C mol H~2~O^-1^), stomata act to maximize photosynthesis minus transpiration. In (a), individual curves at a range of values for the vapour pressure deficit (D) plots $A-\lambda*E$ versus the C~i~, demonstrating that an optimum exists. The ~FARAO~ function finds this optimum numerically and calculates A~n~ and g~s~. The corresponding response of g~s~ to D is shown in panel (b).
+**Figure 3**. Visualization of the optimal model of stomatal conductance. Provided we have an estimate of the 'cost of water' ($\lambda$, mol C mol H~2~O^-1^), stomata act to maximize photosynthesis minus transpiration. In (a), individual curves at a range of values for the vapour pressure deficit (D) plots $A-\lambda*E$ versus the C~i~, demonstrating that an optimum exists. The ~FARAO~ function finds this optimum numerically and calculates A~n~ and g~s~. The corresponding response of g~s~ to D is shown in panel (b).
 
 
 
