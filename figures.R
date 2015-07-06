@@ -70,8 +70,23 @@ figure2 <- function(){
 }
 
 
-# FARAO
 figure3 <- function(){
+  
+  # Set range of leaf temperature
+  tleafs <- seq(10,40,by=0.5)
+  
+  # Simulate.
+  run1 <- Photosyn(Tleaf = tleafs, Vcmax=50, Jmax=2*50, g1=3.5)
+  run2 <- Photosyn(Tleaf = tleafs, Vcmax=50, Jmax=1.5*50, g1=3.5)
+  
+  with(run1, plot(Tleaf, ALEAF, type='l', lwd=2,
+                  ylim=c(0,15), xlim=c(0,45)))
+  with(run2, lines(Tleaf, ALEAF, type='l', lty=5, lwd=2))
+}
+
+
+# FARAO
+figure4 <- function(){
   vpds <- seq(0.5,3.5, by=0.5)
   lam <- 0.002
   f <- plantecophys:::OPTfun

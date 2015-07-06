@@ -1,5 +1,5 @@
 ---
-title: plantecophys - an R package for analysis and modelling leaf gas exchange data
+title: plantecophys - an R package for analysing and modelling leaf gas exchange data
 author: ''
 date: ''
 output:
@@ -34,10 +34,13 @@ and see: http://journals.plos.org/plosone/s/submission-guidelines
 --->
 
 
-```{r echo=FALSE, message=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Two useful packages for printing numbers, accessing content of objects.
 library(broom)
 library(reporttools)
+
+# Tables in markdown
+library(ascii)
 
 # mine
 library(plantecophys)
@@ -69,17 +72,15 @@ includeFigs <- TRUE
 
 # Abstract {.unnumbered}
 
-Here I present the R package 'plantecophys', a toolkit to analyse and model leaf gas exchange data, a cornerstone of plant ecophysiological research. Measurements of leaf photosynthesis and transpiration are routinely collected with portable gas exchange instruments, and analyzed with a few key models. These models include the Farquhar-von Caemmerer-Berry model of leaf photosynthesis, the Ball-Berry models of stomatal conductance, and the coupled leaf gas exchange model which combines the supply and demand functions for CO2 in the leaf. The 'plantecophys' R package includes functions both for fitting these models to measurements, as well as simulating from the fitted models to aid in interpreting experimental data. Here I describe the functionality and implementation of the new package, and give examples on its use in plant ecophysiological research.  I briefly describe functions for modelling C3 leaf gas exchange with the coupled photosynthesis-stomatal conductance model, fitting of the Farquhar model of photosynthesis to measurements of photosynthesis-CO~2~ response curves ('A-Ci curves'), modelling C4 photosynthesis, numerical solution of optimal stomatal behaviour, and energy balance calculations using the Penman-Monteith equation. The package makes technically challenging calculations easily accessible for many users and is freely available on CRAN.
-
-
+Here I present the R package 'plantecophys', a toolkit to analyse and model leaf gas exchange data, a cornerstone of plant ecophysiological research. Measurements of leaf photosynthesis and transpiration are routinely collected with portable gas exchange instruments, and analyzed with a few key models. These models include the Farquhar-von Caemmerer-Berry model of leaf photosynthesis, the Ball-Berry models of stomatal conductance, and the coupled leaf gas exchange model which combines the supply and demand functions for CO~2~ in the leaf. The 'plantecophys' R package includes functions both for fitting these models to measurements, as well as simulating from the fitted models to aid in interpreting experimental data. Here I describe the functionality and implementation of the new package, and give examples on its use in plant ecophysiological research.  I briefly describe functions for modelling C3 photosynthesis with the coupled photosynthesis-stomatal conductance model, fitting the Farquhar model of photosynthesis to measurements of photosynthesis-CO~2~ response curves ('A-Ci curves'), modelling C4 photosynthesis, numerical solution of optimal stomatal behaviour, and energy balance calculations using the Penman-Monteith equation. The package makes technically challenging calculations easily accessible for many users and is freely available on CRAN.
 
 
 # Introduction
 
-Since the advent of portable gas exchange instruments, a wealth of data on leaf gas exchange of CO2 and H~2~O has been collected. These data play a central role in physiological plant ecology, because rates of photosynthesis and transpiration vary widely between plant species, and fluctuate rapidly in response to environmental drivers such as light, humidity and temperature. Not only do leaf gas exchange data allow detailed studies of the underlying plant physiological controls, they are also used to parameterize an important component of land surface models used to predict global water and carbon cycling [e.g. @bonan2014; @dekauwe2015]. 
+Since the advent of portable gas exchange instruments, a wealth of data on leaf gas exchange of CO~2~ and H~2~O has been collected. These data play a central role in physiological plant ecology, because rates of photosynthesis and transpiration vary widely between plant species, and fluctuate rapidly in response to environmental drivers such as light, humidity and temperature. Not only do leaf gas exchange data allow detailed studies of the underlying plant physiological controls, they are also used to parameterize an important component of land surface models used to predict global water and carbon cycling [e.g. @bonan2014; @dekauwe2015]. 
 
 \
-The photosynthesis model of Farquhar, von Caemmerer and Berry [@farquhar1980] (the 'FvC model') is widely used in interpreting leaf gas exchange data (cites), by providing sensible and comparable metrics of the photosynthetic capacity, and accurately predicting the response of photosynthesis to changes in the CO~2~ concentration inside the leaf air space (C~i~). This widely cited model is embedded in many global vegetation models (cite). The key prediction of the model is the response of photosynthesis to [CO~2~] in the intercellular airspaces (Ci). To employ the model, it is generally fit to observations of net photosynthesis along a range of [CO2] concentrations, yielding well-known measures of photosynthetic capacity (V~cmax~ and J~max~). 
+The photosynthesis model of Farquhar, von Caemmerer and Berry [@farquhar1980] (the 'FvC model') is widely used in interpreting leaf gas exchange data (cites), by providing sensible and comparable metrics of the photosynthetic capacity, and accurately predicting the response of photosynthesis to changes in the CO~2~ concentration inside the leaf air space (C~i~). This widely cited model is embedded in many global vegetation models (cite). The key prediction of the model is the response of photosynthesis to [CO~2~] inside the leaf (either chloroplastic [CO~2~], C~c~, or intercellular CO~2~, C~i~). To employ the model, it is generally fit to observations of net photosynthesis along a range of [CO~2~] concentrations, yielding well-known measures of photosynthetic capacity (V~cmax~ and J~max~). 
 
 \
 We do not repeat a detailed description of the FvC model here, as it has been described many times. But generally it is of the form,
@@ -88,7 +89,12 @@ We do not repeat a detailed description of the FvC model here, as it has been de
 $$A_n = min(A_c, A_j) - R_d$$
 
 \
-where A~c~ is the gross photosynthesis rate when Rubisco activity is limiting, A~j~ when RuBP-regeneration is limiting, and R~d~ the rate of dark respiration. A~c~ and A~j~ are non-linear functions of the intercellular CO~2~ concentration (C~i~), both of the form $k_1(C_i\Gamma^∗)/(k_2 + C_i)$, where $\Gamma^∗$ is the CO~2~ compensation point without R~d~, and k~1~ and k~2~ are different parameter combinations for A~c~ and A~j~. The details of these functions and the temperature dependence of the parameters are described elsewhere [@medlyn2002]. The use of C~i~ in these equations is routine, but actually it should be Cc, considering that CO2 in the chloroplast is not equal to that in the intercellular air space. 
+where A~c~ is the gross photosynthesis rate when Rubisco activity is limiting, A~j~ when RuBP-regeneration is limiting, and R~d~ the rate of dark respiration. A~c~ and A~j~ are non-linear functions of the intercellular CO~2~ concentration (C~i~), both of the form $k_1(C_i\Gamma^∗)/(k_2 + C_i)$, where $\Gamma^∗$ is the CO~2~ compensation point without R~d~, and k~1~ and k~2~ are different parameter combinations for A~c~ and A~j~. The details of these functions and the temperature dependence of the parameters are described elsewhere [@medlyn2002]. We have here used C~i~ to denote [CO~2~] concentration in the leaf. Alternatively we may account for the diffusional limitation from intercellular airspaces to the chloroplast, by calculating C~c~ as,
+
+(2)
+$$C_c = C_i - A~n~/g~m~$$
+
+where g~m~ is the mesophyll conductance. 
 
 \
 Fitting the model to data requires some finesse because the model is not a single non-linear equation, but instead a minimum function of two non-linear equations that is sometimes difficult to fit. Moreover, sample sizes collected are often small due to time constraints in the field. A widely used published method requires the user to specify the transition of Vcmax to Jmax limitation [@sharkey2007], a process that both prevents batch analysis and is arbitrary. Another method (http://leafweb.ornl.gov/) requires online submission of data and fits the model without much control or knowledge of the fitting process [@gu2010]. Undoubtedly many more implementations of the fitting process have been developed over the years, but few of these are made publicly available (but see available online tools [@dekauwefitfarquhar; @landfluxtools]). 
@@ -96,7 +102,7 @@ Fitting the model to data requires some finesse because the model is not a singl
 \
 Through Eq. 1, we have a dependency of photosynthesis on the availability of the substrate, Ci. To estimate Ci itself, we must have an estimate of the stomatal conductance to CO~2~. From Fick's law, we can relate A~n~ to g~s~ and C~i~ as,
 
-(2)
+(3)
 $$ A_n = g_s(C_a - C_i) $$
 
 \
@@ -105,18 +111,17 @@ where g~s~ is the conductance to CO~2~. We now have two equations for the photos
 \
 Because g~s~ itself responds to environmental drivers, we must then estimate this dependence with another model. The most successful, though empirical, g~s~ models is the Ball-Berry [@ballberry1987] class of models. This model posits an entirely empirical equation that describes the response of g~s~ to air humidity, CO~2~ and the rate of photosynthesis. This way, effects of leaf temperature and PPFD - both of which are known to affect g~s~ - are modelled through the dependency of A~n~ on these drivers. Thus the third equation is,
 
-(3)
+(4)
 $$ g_s = g_0 + g_1 \frac{A_n}{C_a}f(D)$$
 
 \
 where D is the vapour pressure deficit (kPa), g~0~ and g~1~ are empirical parameters. An alternative approach to modelling g~s~ is through the hypothesis that stomata act optimally in the sense that they maximize photosynthesis while minimizing water loss. This hypothesis was first developed by Cowan and Farquhar [@cowan1977] and has seen many applications. Medlyn et al. [@medlyn2011] showed that the optimality hypothesis, when coupled to the FvC model, leads to an expression analogous to the Ball-Berry type models (Eq. 3), but with a different D response function (f(D) in Eq. 3) than the original Ball-Berry model, or yet another version introduced by Leuning [@leuning1995].
 
 \
-Finally we can combine the biochemical demand function of photosynthesis (Eq. 1) with the supply function (Eq. 2) and an expression for the dependency of g~s~ on environmental drivers (Eq. 3). This 'coupled' leaf gas exchange model [@leuning1990; @collatz1991] is implemented in many process-based ecosystem models [@wangl1998; @bonan2014].
-This model allows prediction of A, g_s and leaf transpiration rate in response to all major environmental drivers (except soil water limitation), and key leaf traits (g1, Vcmax, Jmax, Rd). 
+Finally we can combine the biochemical demand function of photosynthesis (Eq. 1) with the supply function (Eq. 2) and an expression for the dependency of g~s~ on environmental drivers (Eq. 3). This 'coupled' leaf gas exchange model [@leuning1990; @collatz1991] is implemented in many process-based ecosystem models [@wangl1998; @bonan2014]. This model allows prediction of A, g_s and leaf transpiration rate in response to all major environmental drivers (except soil water limitation), and key leaf traits (g1, Vcmax, Jmax, Rd). 
 
 \
-Despite the widespread use of the FvC model and the coupled leaf gas exchange model, tools to analyze the data are scattered and subject to little standardization. Fitting the FvC model to CO~2~ response curves is a standard procedure but different methods can yield different parameter values, making comparisons difficult. The coupled leaf gas exchange model is not straightforward to implement, and I do not know of an open-source implementation that is publicly available. I here describe the plantecophys package, implemented in the R language [@rfoundation]. The code is freely available (without restrictions), and managed with a version control system. I have developed the code base in my work on leaf and canopy modelling of photosynthesis and stomatal conductance, with many additions based on user requests [@medlyn2011; @barton2012; @medlyn2013; @duursma2013; @duursma2014].
+Despite the widespread use of the FvC model and the coupled leaf gas exchange model, tools to analyze the data are scattered and subject to little standardization. Fitting the FvC model to CO~2~ response curves is a standard procedure but different methods can yield different parameter values, making comparisons difficult. The coupled leaf gas exchange model is not straightforward to implement, and I do not know of an open-source implementation that is publicly available. I here describe the plantecophys package, implemented in the R language [@rfoundation]. The code is freely available (without restrictions), and managed with a version control system. The package is the results of our work on leaf and canopy modelling of photosynthesis and stomatal conductance, with many additions based on user requests [@medlyn2011; @barton2012; @peltoniemi2012; @medlyn2013; @duursma2013; @duursma2014].
 
 
 # Design and implementation
@@ -126,20 +131,16 @@ Despite the widespread use of the FvC model and the coupled leaf gas exchange mo
 The main functions in the package are summarized in Table 1. 
 
 ```{r results='asis', echo=FALSE, message=FALSE, warn=FALSE}
-f <- c("`fitaci`","`fitBB`","`FARAO`","`Photosyn`","`PhotosynEB`","`RHtoVPD` etc.")
+f <- c("`fitaci`","`fitBB`","`FARAO`","`Photosyn`","`PhotosynEB`","`AciC4`", "`RHtoVPD` etc.")
 d <- c("Fit, summarize, plot and simulate photosynthesis-[CO~2~] response curves (A-Ci curves)",
 "Fit Ball-Berry type models of stomatal conductance",
 "Estimate optimal stomatal conductance with a numerical implementation of the Cowan-Farquhar hypothesis",
-"Simulate leaf photosynthesis and transpiration with the coupled leaf gas exchange model",
+"Simulate leaf photosynthesis and transpiration with the coupled leaf gas exchange model. Also simulates the FvC model when either C~i~ or g~s~ is given as input",
 "Estimate leaf temperature from energy balance, when a significant leaf boundary layer is present",
+"Simulates the dependence of C4 photosynthesis on the intercellular CO~2~ concentration",
 "Convert between commonly used units (relative humidity, vapour pressure deficit, dewpoint temperature)")
 df <- data.frame(Function=f, Description=d)
 
-# library(knitr)
-# kable(df, format="markdown",
-#       caption="Table 1. Main functions in the plantecophys package. Each function has its own detailed help page  including example code.")
-
-library(ascii)
 suppressWarnings(print(ascii(df, caption="Table 1. Main functions in the plantecophys package.",
             include.rownames=FALSE),
       type='pandoc'))
@@ -155,10 +156,10 @@ The 'plantecophys' package is implemented in native R, and has no dependencies o
 
 ### Fitting A-Ci curves
 
-The `fitaci` function fits the FvC model, yielding estimates of V~cmax~, J~max~ and R~d~ and their standard errors. Optionally R~d~ can be provided as a known value, otherwise it is estimated from the A-Ci curve. The user does not have to provide the transition point (see Fig. 1), as this is estimated by `fitaci` automatically. It is however an option to fix the transition point, which may be helpful to check whether the best fit was achieved. Standard errors are estimated with the usual methods for non-linear regression (`nls` function in base R). Instead of fitting the minimum function (Eq. 1) it is actually far more practical to use a hyperbolic minimum, which avoids a discontinuity at the transition from A~c~ to A~j~ limitation. 
+The `fitaci` function fits the FvC model, yielding estimates of V~cmax~, J~max~ and R~d~ and their standard errors. Optionally R~d~ can be provided as a known value, otherwise it is estimated from the A-Ci curve. The user does not have to provide the transition point (see Fig. 1), as this is estimated by `fitaci` automatically. It is however an option to fix the transition point, which may be helpful to check whether the best fit was achieved. Standard errors are estimated with the usual methods for non-linear regression (`nls` function in base R). Instead of fitting the minimum function (Eq. 1), `fitaci~ uses the hyperbolic minimum, which avoids a discontinuity at the transition from A~c~ to A~j~ limitation. Finally, the user can provide an estimate of mesophyll conductance (g~m~) [following @ethier2004], in which case the fitted values of V~cmax~ and J~max~ can be interpreted as chloroplastic rates.
 
 \
-The function takes a dataframe as input, which includes A~n~, C~i~ and optionally leaf temperature (T~leaf~) and photosynthetically active radiation (PAR). It then returns a special object which has a print and plot method.
+The function takes a dataframe as input, which includes measurements of A~n~, C~i~ and optionally leaf temperature (T~leaf~) and photosynthetically active radiation (PAR). It then returns a special object which has a print and plot method. It is easily used like this:
 
 ```
 # Fit FvC model
@@ -171,6 +172,7 @@ plot(f)
 \
 The output of the above example is shown in Fig. 2. Additionally, `fitacis` can be sued to fit many curves at once, for example one for each species or site in a dataset. The function `Aci` simulates the A-Ci curve, that is, it returns A~n~ when C~i~ is known.
 
+A C4 model of leaf photosynthesis [@caemmerer2000] is also implemented (in `AciC4`), but at the moment it is only possible to fit the C3 model of leaf photosynthesis to A-Ci curves. 
 
 ### Fitting stomatal conductance models
 
@@ -179,10 +181,27 @@ The straightforward `fitBB` function provides an interface to non-linear or line
 
 ### Coupled leaf gas exchange model
 
-The intersection of the supply and demand curves of photosynthesis gives the operating intercellular CO~2~ concentration. This is solved by the `Photosyn` function. This flexible interface can be used to either a) estimate A~n~ when C~i~ is known (`Photosyn(Ci=...)`, equivalent to `Aci(...)`), b) estimate A~n~ when g~s~ is known (`Photosyn(GS=...)`) (cf. Fig. 2) or c) solve C~i~ from the coupled leaf gas exchange model (Eqs. 1-3). 
+The intersection of the supply and demand curves of photosynthesis (Fig. 1b) gives the operating intercellular CO~2~ concentration. This is solved by the `Photosyn` function. This flexible interface can be used to either 1) estimate A~n~ when C~i~ is known (`Photosyn(Ci=...)`, equivalent to `Aci(...)`), 2) estimate A~n~ when g~s~ is known (`Photosyn(GS=...)`) (cf. Fig. 1b) or c) solve C~i~ from the coupled leaf gas exchange model (Eqs. 1,3,4). 
 
-- example response curves
+To simulate photosynthesis across a range of environmental drivers, we can provide multiple values for either PAR, Tleaf, VPD, or CO2. In the following example we reduce J~max~ but hold V~cmax~ constant to look at the effect on the temperature optimum of A~n~. Note that VPD is held constant in this simple example.
+
+*because it is interesting to study this, since Jmax and Vcmax have different T responses, so we expect a different Jmax/Vcmax ratio to affect the T response of An*
+
+```
+# Set range of leaf temperature
+tleafs <- seq(10,40,by=0.5)
+
+# Simulate.
+run1 <- Photosyn(Tleaf = tleafs, Vcmax=50, Jmax=2*50, g1=3.5)
+run2 <- Photosyn(Tleaf = tleafs, Vcmax=50, Jmax=1.5*50, g1=3.5)
+```
+
+These results are then used to draw the results in Fig. 3.
+
+- leaf respiration follows a simple Q10 response.
+- temperature response functions built in following Medlyn et al. [@medlyn2002]
 - energy balance (cite [@wang1998; @buckley2014]) - brief on details.
+
 
 ### Numerical solution of optimal stomatal conductance
 
@@ -241,7 +260,14 @@ figure2()
 figure3()
 ```
 
-**Figure 3**. Visualization of the optimal model of stomatal conductance. Provided we have an estimate of the 'cost of water' ($\lambda$, mol C mol H~2~O^-1^), stomata act to maximize photosynthesis minus transpiration. In (a), individual curves at a range of values for the vapour pressure deficit (D) plots $A-\lambda*E$ versus the C~i~, demonstrating that an optimum exists. The ~FARAO~ function finds this optimum numerically and calculates A~n~ and g~s~. The corresponding response of g~s~ to D is shown in panel (b).
+**Figure 3**. `Photosyn` examples.
+
+
+```{r fig.width=8, fig.height=4, echo=FALSE, message=FALSE, eval=includeFigs, warn=FALSE}
+figure4()
+```
+
+**Figure 4**. Visualization of the optimal model of stomatal conductance. Provided we have an estimate of the 'cost of water' ($\lambda$, mol C mol H~2~O^-1^), stomata act to maximize photosynthesis minus transpiration. In (a), individual curves at a range of values for the vapour pressure deficit (D) plots $A-\lambda*E$ versus the C~i~, demonstrating that an optimum exists. The ~FARAO~ function finds this optimum numerically and calculates A~n~ and g~s~. The corresponding response of g~s~ to D is shown in panel (b).
 
 
 
