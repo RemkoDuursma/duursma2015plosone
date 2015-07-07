@@ -64,8 +64,8 @@ figure2 <- function(){
   acidata1$PPFD <- 1800
   f <- suppressWarnings(fitaci(acidata1))
   
-  par(mar=c(5,5,1,1), cex.lab=1.3, cex.axis=1)
-  plot(f)
+  par(mar=c(5,5,1,1), cex.lab=1.3, cex.axis=1, xaxs="i", yaxs="i")
+  plot(f, xlim=c(0,1500), ylim=c(0,30))
   
 }
 
@@ -90,7 +90,7 @@ figure3 <- function(){
     
   }
   tairs <- seq(5,40, by=5)
-  Cols <- heat.colors(length(tairs)+3)
+  Cols <- heat.colors(length(tairs)+4)
   p <- Photosyn(Tleaf=tairs, VPD=vpdfun(tairs))
   
   
@@ -102,13 +102,13 @@ figure3 <- function(){
                                   cex=1.2,  bg=Cols[i])
   box()
   plotlabel("(a)","topleft")
-  for(i in 1:(nrow(p)-1)){
-    arrows(x0=p$Ci[i], x1=p$Ci[i+1], y0=p$ALEAF[i], y1=p$ALEAF[i+1],
-           col=Cols[i], length=0.15)
-  }
+#   for(i in 1:(nrow(p)-1)){
+#     arrows(x0=p$Ci[i], x1=p$Ci[i+1], y0=p$ALEAF[i], y1=p$ALEAF[i+1],
+#            col=Cols[i], length=0.15)
+#   }
   legend("left", c(expression(T[leaf] == 5),
                       expression(T[leaf] == 40)),
-         lty=1, lwd=2, col=Cols[c(1,length(Cols))], bty='n', cex=0.8)
+         lty=1, lwd=2, col=Cols[c(1,length(tairs))], bty='n', cex=0.8)
   
   
   with(p, plot(Tleaf, ALEAF,
