@@ -55,6 +55,7 @@ predline <- function(fit, from=NULL, to=NULL, poly=TRUE, ...){
   
 }
 
+
 ablinepiece <- function(a=NULL,b=NULL,reg=NULL,from=NULL,to=NULL,...){
   
   # Borrowed from abline
@@ -98,4 +99,3 @@ alpha <- function (colour, alpha = NA) {
   new_col[is.na(colour)] <- NA
   new_col
 }
-
