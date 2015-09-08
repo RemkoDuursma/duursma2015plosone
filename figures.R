@@ -120,3 +120,56 @@ figure4 <- function(){
   plotlabel("(b)","bottomleft")
 }
   
+
+
+
+
+tum <- read.csv("TumbarumbaGasex_ACis_Medlyn.csv")
+
+tumh <- subset(tum, PARi > 1400)
+
+
+# poor curves (no saturation)
+bad <- c("12","18","39","30","31")
+
+
+library(plantecophys)
+f <- fitacis(subset(tumh, !Curve %in% bad), "Curve")
+
+pdf("tmp.pdf")
+plot(f)
+dev.off()
+
+# lin <- read.csv("http://files.figshare.com/1886204/WUEdatabase_merged_Lin_et_al_2015_NCC.csv")
+# tumspot <- subset(lin, Datacontrib == "Belinda Medlyn")
+# saveRDS(tumspot, "tumspot.rds")
+
+tumspot <- readRDS("tumspot.rds")
+gfit <- fitBB(tumspot, varnames=list(ALEAF="Photo",GS="Cond",VPD="VPD",
+                                     Ca="CO2S"))
+tumspot$GSpred <- predict(gfit$fit, tumspot)
+g1 <- coef(gfit)[[2]]
+
+# (a)
+windows(8,8)
+par(mfrow=c(2,2))
+plot(f, "oneplot", addlegend=F, highlight="25", trans=F)
+
+with(coef(f), plot(Vcmax, Jmax,
+                   pch=19, 
+                   xlim=c(40,160),
+                   ylim=c(80,260)))
+predline(lm(Jmax ~ Vcmax, data=coef(f)))
+
+with(tumspot, plot(GSpred, Cond, xlim=c(0,0.6), ylim=c(0,0.6),
+                   pch=19, col=alpha("black",0.3)))
+abline(0,1)
+
+with(tumspot,plot(VPD, Photo/Trmmol,
+                  pch=19, col=alpha("black",0.3)))
+curve(0.1*mean(tumspot$CO2S)/(1.6*(g1*sqrt(x) + x)), add=TRUE)
+
+
+
+
+
