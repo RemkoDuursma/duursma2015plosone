@@ -1,3 +1,10 @@
+# Shorthand function to print numbers with two decimal points (and retain trailing zeroes)
+f <- function(x, digits=2)sprintf(x, fmt=paste0("%.",digits,"f"))
+
+# Nice function to format P values.
+pval <- function(...)formatPval(..., includeEquality=TRUE)
+
+
 to.pdf <- function(expr, filename, ..., verbose=TRUE) {
   if(!file.exists(dirname(filename)))
     dir.create(dirname(filename), recursive=TRUE)

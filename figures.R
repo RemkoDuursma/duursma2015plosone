@@ -5,8 +5,8 @@ library(plantecophys)
 
 figure1 <- function(){
   
-  par(xaxs="i", yaxs="i", cex.lab=1.3, mar=c(5,5,1,1), cex.axis=1,
-      mfrow=c(1,2))
+  par(xaxs="i", yaxs="i", cex.lab=1.3, mar=c(4,4,1,1), cex.axis=1,
+      mfrow=c(1,2), mgp=c(2,0.5,0), las=1, tcl=0.2)
   
   ci <- seq(40, 1050, length=101)
   acirun <- Aci(Ci=ci, Vcmax=65, Jmax=130, Rd=1.5)
@@ -33,7 +33,6 @@ figure1 <- function(){
   # PAnel b
   acirun <- Aci(Ci=ci)
   
-  par(xaxs="i", yaxs="i", cex.lab=1.3, mar=c(5,5,1,1), cex.axis=1)
   with(acirun, plot(Ci, ALEAF, type='l',
                     ylim=c(0,20), xlim=c(0,800),
                     lwd=2,
@@ -64,8 +63,9 @@ figure2 <- function(){
   acidata1$PPFD <- 1800
   f <- suppressWarnings(fitaci(acidata1))
   
-  par(mar=c(5,5,1,1), cex.lab=1.3, cex.axis=1, xaxs="i", yaxs="i")
-  plot(f, xlim=c(0,1500), ylim=c(0,30))
+  par(mar=c(4,4,1,1), cex.lab=1.3, cex.axis=1, xaxs="i", yaxs="i",
+      mgp=c(2,0.5,0), las=1, tcl=0.2)
+  plot(f, xlim=c(0,1500), ylim=c(0,30), legendbty='n')
   
 }
 
@@ -94,7 +94,8 @@ figure3 <- function(){
   p <- Photosyn(Tleaf=tairs, VPD=vpdfun(tairs))
   
   
-  par(mfrow=c(1,2), mar=c(5,5,1,1), xaxs="i", yaxs="i", cex.lab=1.2)
+  par(mfrow=c(1,2), mar=c(4,4,1,1), xaxs="i", yaxs="i", cex.lab=1.2,
+      mgp=c(2,0.5,0), las=1, tcl=0.2)
   plot(1, xlim=c(0,500), ylim=c(0,20), type='n',
        xlab=expression(italic(C)[i]~~(ppm)),
        ylab=expression(italic(A)[n]~~(mu*mol~m^-2~s^-1)))
@@ -137,7 +138,8 @@ figure4 <- function(){
   
   Cols <- rev(grey(c(1:length(vpds))/length(vpds)))
   
-  par(mfrow=c(1,2), mar=c(5,5,1,1), cex.lab=1.1)
+  par(mfrow=c(1,2), mar=c(4,4,1,1), cex.lab=1.1,
+      mgp=c(2,0.5,0), las=1, tcl=0.2)
   plot(1, type='n',        
        ylim=c(-1,10),
        xlim=c(0,400),
@@ -162,42 +164,42 @@ figure4 <- function(){
 
 figure5 <- function(){
   
-  tum <- read.csv("TumbarumbaGasex_ACis_Medlyn.csv")
-  
-  tumh <- subset(tum, PARi > 1400)
-  
-  # poor curves (no saturation)
-  bad <- c("12","18","39","30","31")
-  
-  f <- fitacis(subset(tumh, !Curve %in% bad), "Curve")
-  
-  # lin <- read.csv("http://files.figshare.com/1886204/WUEdatabase_merged_Lin_et_al_2015_NCC.csv")
-  # tumspot <- subset(lin, Datacontrib == "Belinda Medlyn")
-  # saveRDS(tumspot, "tumspot.rds")
-  
-  tumspot <- readRDS("tumspot.rds")
-  gfit <- fitBB(tumspot, varnames=list(ALEAF="Photo",GS="Cond",VPD="VPD",
-                                       Ca="CO2S"))
-  tumspot$GSpred <- predict(gfit$fit, tumspot)
-  g1 <- coef(gfit)[[2]]
-  
+
+
   # (a)
-  windows(8,8)
-  par(mfrow=c(2,2), mar=c(5,5,1,1), cex=1.1)
-  plot(f, "oneplot", addlegend=F, highlight="25", trans=F)
+  par(mfrow=c(2,2), mar=c(4,4,1,1), cex=1.1, xaxs="i", yaxs="i",las=1,
+      tcl=0.2,mgp=c(2,0.5,0),
+      cex.axis=0.8)
+  plot(acifits, "oneplot", addlegend=FALSE, highlight="25", transitionpoint=FALSE,
+       ylim=c(-2,40), xlim=c(0,1100))
+  box()
+  plotlabel("(a)", "topleft")
   
-  with(coef(f), plot(Vcmax, Jmax,
+  with(coef(acifits), plot(Vcmax, Jmax,
+                           xlab=expression(V[cmax]~~(mu*mol~m^-2~s^-1)),
+                           ylab=expression(J[max]~~(mu*mol~m^-2~s^-1)),
                      pch=19, 
                      xlim=c(40,160),
-                     ylim=c(80,260)))
-  predline(lm(Jmax ~ Vcmax, data=coef(f)))
+                     ylim=c(100,300)))
+  predline(lm(Jmax ~ Vcmax, data=coef(acifits)))
+  plotlabel("(b)", "topleft")
   
   with(tumspot, plot(GSpred, Cond, xlim=c(0,0.6), ylim=c(0,0.6),
+                     xlab=expression(Modelled~g[s]~~(mol~m^-2~s^-1)),
+                     ylab=expression(Measured~g[s]~~(mol~m^-2~s^-1)),
                      pch=19, col=alpha("black",0.3)))
   abline(0,1)
+  plotlabel("(c)", "topleft")
   
-  with(tumspot,plot(VPD, Photo/Trmmol,
+  with(subset(tumspot,PARin > 1000), plot(VPD, Photo/Trmmol,
+                    xlab="D (kPa)",
+                    xlim=c(0,3), ylim=c(0,14),
+                    ylab=expression(ITE~~(mu*mol~CO[2]/mmol~H[2]*O)),
                     pch=19, col=alpha("black",0.3)))
-  curve(0.1*mean(tumspot$CO2S)/(1.6*(g1*sqrt(x) + x)), add=TRUE)
-
+  curve(0.1*mean(tumspot$CO2S)/(1.6*(g1*sqrt(x) + x)), add=TRUE,
+        from=min(tumspot$VPD), to=max(tumspot$VPD))
+  plotlabel("(d)", "topleft")
+  
 }
+
+

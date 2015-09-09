@@ -16,55 +16,21 @@ bibliography: references.bib
 Remko A. Duursma^1\*^
 
 \
-^1^ Hawkesbury Institute for the Environment, University of Western Sydney, Penrith, NSW, Australia
+^1^ Hawkesbury Institute for the Environment, Western Sydney University, Penrith, NSW, Australia
 
 \
 \* *Corresponding author*: 
 Remko Duursma
-E: remkoduursma@gmail.com
-T: +61(0)422096908
+E: remkoduursma@westernsydney.edu.au
+T: +61(0)245701806
 
 
 *Short title*: The plantecophys R package
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Two useful packages for printing numbers, accessing content of objects.
-library(broom)
-library(reporttools)
-
-# Tables in markdown
-library(ascii)
-
-# mine
-library(plantecophys)
-
-# use git
-library(git2r)
-
-# figures
-source("figures.R")
-
-# output
-if(!dir.exists("output"))dir.create("output")
-
-# Do calculations here, create objects that we can use throughout the paper.
-
-# Or, place them all in a separate script:
-# source("manuscript_calcs.R")
-
-# Shorthand function to print numbers with two decimal points (and retain trailing zeroes)
-f <- function(x, digits=2)sprintf(x, fmt=paste0("%.",digits,"f"))
-
-# Nice function to format P values.
-pval <- function(...)formatPval(..., includeEquality=TRUE)
-
-# Set Flag to include figures in text or not.
-includeFigs <- FALSE
-
-# This document can be compiled with the 'Knit Word' button in Rstudio, or:
-# library(rmarkdown)
-# render("manuscript.Rmd", "word_document", "manuscript.docx")
+# Load packages and custom functions
+source("R/load.R")
 
 # Find current SHA of plantecophys
 rep_pkg <- "c:/repos/plantecophys"
@@ -76,15 +42,15 @@ if(file.exists(rep_pkg)){
   cur_sha <- "???"
 }
 
-# Download data needed for Figure 5.
-
-
+# Analysis for Figure 5.
+source("R/analysis.R")
 
 # Make PDFs
-to.pdf(figure1(), "output/figure1.pdf", width=8, height=4, verbose=FALSE)
-to.pdf(figure2(), "output/figure2.pdf", width=4, height=4, verbose=FALSE)
-to.pdf(figure3(), "output/figure3.pdf", width=8, height=4, verbose=FALSE)
-to.pdf(figure4(), "output/figure4.pdf", width=8, height=4, verbose=FALSE)
+source("R/make_figures.R")
+
+# This document can be compiled with the 'Knit Word' button in Rstudio, or:
+# library(rmarkdown)
+# render("manuscript.Rmd", "word_document", "manuscript.docx")
 ```
 
 
@@ -113,12 +79,14 @@ $$A_n = min(A_c, A_j) - R_d$$
 \
 where A~n~ is the net rate of CO~2~ assimulation, A~c~ is the gross photosynthesis rate when Rubisco activity is limiting, A~j~ when RuBP-regeneration is limiting, and R~d~ the rate of dark respiration (see Fig. 1a). A~c~ and A~j~ are non-linear functions of the chloroplastic CO~2~ concentration (C~c~), both of the form $k_1(C_c{\Gamma}^{∗})/(k_2 + C_c)$, where ${\Gamma}^{∗}$ is the CO~2~ compensation point without R~d~, and k~1~ and k~2~ are different parameter combinations for A~c~ and A~j~. The details of these functions and the temperature dependence of the various parameters are described elsewhere [@medlyn2002]. 
 
+\
 In the practical application of the FVcB model, it is often assumed that C~c~ is equal to the intercellular [CO~2~] concentration (C~i~), which is useful because C~i~ can be estimated from leaf gas exchange data [@sharkey1982], and this avoids the need to estimate the conductance from intercellular airspaces to the chloroplast (mesophyll conductance, g~m~). In the remainder of this article I will use C~c~ as the driver of photosynthesis, but point out that this can be replaced by C~i~ if the user does not have an estimate of g~m~. When g~m~ is known, C~c~ is calculated from C~i~ with Eq. 2. 
 
 \
 (2)
 $$C_c = C_i - A_n/g_m$$
 
+\
 where g~m~ is the mesophyll conductance (mol m^-2^ s^-1^). Although this method assumes that g~m~ is constant for a given leaf, it is well known that g~m~ responds dynamically to fluctuations in environmental drivers [@flexas2008] although some of the variation in g~m~ may due to artefacts related to (photo-)respiratory effects on measured g~m~ with standard methods [@tholen2012]. Because no model has been developed to date that adequately captures the variation in g~m~, it is a constant parameter in the implementation presented here. However, it can still be used to study the effects of non-constant g~m~ on rates of photosynthesis and its response to environmental drivers, as the parameter can be varied in model simulations.
 
 \
@@ -180,6 +148,7 @@ suppressWarnings(print(ascii(df, caption="Table 1. Main functions in the plantec
 
 The 'plantecophys' package is implemented in R, has no dependencies on other packages, and does not require compilation (i.e. it is written in native R only). As such it builds easily, and is highly portable. The source code is maintained with git version control, and is hosted in an online repository (http://www.bitbucket.org/remkoduursma/plantecophys). The repository includes an issue tracker, where users can suggest changes or report bugs.  This paper describes version `r packageVersion("plantecophys")` (git SHA `r cur_sha`).
 
+\
 All code used in this article (including the code to generate the actual article in markdown), can be downloaded (Zenodo link here).
 
 ## Results and Discussion
@@ -192,9 +161,8 @@ The `fitaci` function fits the FvCB model, yielding estimates of V~cmax~, J~max~
 (5)
 $$A_m = \frac{A_c+A_j - \sqrt{(A_c+A_j)^2-4 \theta A_c A_j}}{2 \theta} - R_d$$
 
-where $\theta$ is a shape parameter, set to 0.9999, and A~m~ is the hyperbolic minimum of A~c~ and A~j~. 
-
-The fit of the FvCB model to data is achieved with non-linear least squares, and standard errors of the parameters are estimated with standard methods (`nls` function in base R, see [@ritz2008]). The `fitaci` function includes methods to estimate appropriate starting values from the data, and attempts the fits along a wide range of possible starting values. Optionally, R~d~ can be provided as a known value, otherwise it is estimated from the A-C~i~ curve. The user does not have to provide the transition point (see Fig. 1), as this is estimated by `fitaci` automatically. It is however an option to fix the transition point (via the `citransition` argument), which may be helpful to check whether the best fit was achieved. Finally, the user can provide an estimate of mesophyll conductance (g~m~) (following [@ethier2004]), in which case the fitted values of V~cmax~ and J~max~ can be interpreted as chloroplastic rates.
+\
+where $\theta$ is a shape parameter, set to 0.9999, and A~m~ is the hyperbolic minimum of A~c~ and A~j~. The fit of the FvCB model to data is achieved with non-linear least squares, and standard errors of the parameters are estimated with standard methods (`nls` function in base R, see [@ritz2008]). The `fitaci` function includes methods to estimate appropriate starting values from the data, and attempts the fits along a wide range of possible starting values. Optionally, R~d~ can be provided as a known value, otherwise it is estimated from the A-C~i~ curve. The user does not have to provide the transition point (see Fig. 1), as this is estimated by `fitaci` automatically. It is however an option to fix the transition point (via the `citransition` argument), which may be helpful to check whether the best fit was achieved. Finally, the user can provide an estimate of mesophyll conductance (g~m~) (following [@ethier2004]), in which case the fitted values of V~cmax~ and J~max~ can be interpreted as chloroplastic rates.
 
 \
 Required inputs are measurements of A~n~ and C~i~, and optionally leaf temperature (T~leaf~), and photosynthetically active radiation (PAR). Also required are estimates of Michaelis-Menten constants (K~c~, K~o~ or the combination K~m~) and $\Gamma^{*}$, if these are not available they are estimated from T~leaf~ with standard methods [@medlyn2002].
@@ -280,10 +248,28 @@ Optionally, the `FARAO` function accounts for the presence of a leaf boundary la
 
 ### An example application
 
-To demonstrate a practical application of the key functions in the package, I use data from Medlyn et al. [-@medlyn2007] on *Eucalyptus delegatensis*. Both A-C~i~ curves and 'spot gas exchange' data (i.e. leaf gas exchange measurements at prevailing environmental conditions) were collected. Using the `fitacis` function, it is straightforward to fit XXX curves to the measured A-C~i~ curves in one line of code, and make standard plots of the fitted curves (shown iin Fig. 5a one option). The fitted coefficients are easily extracted, and used to plot a standard comparison of fitted Vcmax and Jmax values (Fig. 5b), which show the typical correlation between the two. Next I fit the spot gas exchange data, yielding estimates of g1 and g0, and we can quickly compare modelled to measured g~s~ (Fig. 5c), and compare the model prediction of instantaneous transpiration efficiency (A/E) to measurements along the variation in D (Fig. 5d). This simple example application is available in the published repository (see Methods).
+To demonstrate a practical application of the key functions in the package, I use field-collected data from Medlyn et al. [-@medlyn2007] on *Eucalyptus delegatensis*. Both A-C~i~ curves and 'spot gas exchange' data (i.e. leaf gas exchange measurements at prevailing environmental conditions) were collected. Using the `fitacis` function, it is straightforward to fit all `r length(acifits)` curves to the A-C~i~ data, and make standard plots of the fitted curves (shown in Fig. 5a). The fitted coefficients are easily extracted, and used to plot a standard comparison of fitted V~cmax~ and J~max~ values (Fig. 5b), which show the typical correlation between the two. Next I fit the spot gas exchange data, yielding estimates of g~1~ and (optionally) g~0~, and we can quickly compare modelled to measured g~s~ (Fig. 5c), and compare the model prediction of instantaneous transpiration efficiency (A~n~/E) to measurements along the variation in D (Fig. 5d). This simple example application is available in the published repository (see Methods). The simplified code for this example (panels a-c), omitting special formatting and a few minor settings is given below.
+
+```
+# Fit A-Ci curves. In this case, each separate curve is indexed by a column names 'Curve',
+# and the data were already read into a dataframe (tumh)
+acifits <- fitacis(tumh, "Curve")
+
+# Plot all A-Ci curves in one panel, highlight one fitted curve.
+plot(acifits, "oneplot", highlight="25")
+
+# Fit Medlyn et al.'s (2011) version of the Ball-Berry model
+# Data are already read into a dataframe (tumspot), and have standard names (or they can be set).
+gfit <- fitBB(tumspot, gsmodel="BBOpti")
+
+# Plot measured versus modelled, by predicting from the fitted model.
+tumspot$GSpred <- predict(gfit$fit, tumspot)
+with(tumspot, plot(GSpred, Cond))
+```
 
 
-
+\
+**Figure 5**. Example application of the plantecophys package to A-C~i~ curves and spot gas exchange measurements on *Eucalyptus delegatensis*. (a) Fitted A-C~i~ curves with one curve highlighted (b) Estimates of J~max~ plotted against V~cmax~, obtained from the fitted curves in panel (a). Solid line is a regression line (J~max~ = `r round(lmjvt$estimate[1],2)` + `r signif(lmjvt$estimate[2],2)` V~cmax~, R^2^ = `r signif(lmjvg$r.squared,2)`) with a 95% confidence interval for the mean. (c) Modelled (with the model of Medlyn et al. 2011) versus measured g~s~ (p `r pval(lmgpredg$p.value)`, R^2^ = `r signif(lmgpredg$r.squared,2)`). Measurements included a wide range of environmental conditions (PAR, T~leaf~, D). In this example, only g~1~ was fit (estimate = `r signif(g1,3)`, 95% CI = `r paste(signif(g1ci,3), collapse=" - ")`). (d) The predicted response of ITE (A~n~ / E) as a function of D from the fitted model in panel (c) (solid line), and the measurements from panel (c) when PAR > 1000.
 
 
 
