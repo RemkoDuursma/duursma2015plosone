@@ -144,12 +144,12 @@ suppressWarnings(print(ascii(df, caption="Table 1. Main functions in the plantec
       type='pandoc'))
 ```
 
-## Language
+## Language and availability
 
-The 'plantecophys' package is implemented in R, has no dependencies on other packages, and does not require compilation (i.e. it is written in native R only). As such it builds easily, and is highly portable. The source code is maintained with git version control, and is hosted in an online repository (http://www.bitbucket.org/remkoduursma/plantecophys). The repository includes an issue tracker, where users can suggest changes or report bugs.  This paper describes version `r packageVersion("plantecophys")` (git SHA `r cur_sha`).
+The 'plantecophys' package is implemented in R, has no dependencies on other packages, and does not require compilation (i.e. it is written in native R only). As such it builds easily, and is highly portable. A stable release is available on CRAN. The source code is maintained with git version control, and is hosted in an online repository (http://www.bitbucket.org/remkoduursma/plantecophys). The repository includes an issue tracker, where users can suggest changes or report bugs.  This paper describes version `r packageVersion("plantecophys")` (git SHA `r cur_sha`).
 
 \
-All code used in this article (including the code to generate the actual article in markdown), can be downloaded (Zenodo link here).
+All code used in this article (including the code to generate the actual article in markdown), can be downloaded from http://www.github.com/duursmaplantecophys2015.
 
 ## Results and Discussion
 
