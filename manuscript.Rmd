@@ -19,10 +19,8 @@ Remko A. Duursma^1\*^
 ^1^ Hawkesbury Institute for the Environment, Western Sydney University, Penrith, NSW, Australia
 
 \
-\* *Corresponding author*: 
-Remko Duursma
-E: remkoduursma@westernsydney.edu.au
-T: +61(0)245701806
+\* *Corresponding author*
+Email: r.duursma@westernsydney.edu.au
 
 
 *Short title*: The plantecophys R package
@@ -144,14 +142,15 @@ suppressWarnings(print(ascii(df, caption="Table 1. Main functions in the plantec
       type='pandoc'))
 ```
 
-## Language and availability
+## Language
 
-The 'plantecophys' package is implemented in R, has no dependencies on other packages, and does not require compilation (i.e. it is written in native R only). As such it builds easily, and is highly portable. A stable release is available on CRAN. The source code is maintained with git version control, and is hosted in an online repository (http://www.bitbucket.org/remkoduursma/plantecophys). The repository includes an issue tracker, where users can suggest changes or report bugs.  This paper describes version `r packageVersion("plantecophys")` (git SHA `r cur_sha`).
+The 'plantecophys' package is implemented in R, has no dependencies on other packages, and does not require compilation (i.e. it is written in native R only). As such it builds easily, and is highly portable. The source code is maintained with git version control, and is hosted in an online repository (http://www.bitbucket.org/remkoduursma/plantecophys), from which a development version of the package can easily be installed. The repository includes an issue tracker, where users can suggest changes or report bugs.  This paper describes version `r packageVersion("plantecophys")` (git SHA `r cur_sha`).
 
 \
-All code used in this article (including the code to generate the actual article in markdown), can be downloaded from http://www.github.com/duursmaplantecophys2015.
+All code used in this article (including the code to generate the article written in markdown, all figures and full example code), can be downloaded from http://www.github.com/duursma2015plosone.
 
-## Results and Discussion
+
+# Results and Discussion
 
 ### Fitting A-C~i~ curves
 
@@ -165,9 +164,10 @@ $$A_m = \frac{A_c+A_j - \sqrt{(A_c+A_j)^2-4 \theta A_c A_j}}{2 \theta} - R_d$$
 where $\theta$ is a shape parameter, set to 0.9999, and A~m~ is the hyperbolic minimum of A~c~ and A~j~. The fit of the FvCB model to data is achieved with non-linear least squares, and standard errors of the parameters are estimated with standard methods (`nls` function in base R, see [@ritz2008]). The `fitaci` function includes methods to estimate appropriate starting values from the data, and attempts the fits along a wide range of possible starting values. Optionally, R~d~ can be provided as a known value, otherwise it is estimated from the A-C~i~ curve. The user does not have to provide the transition point (see Fig. 1), as this is estimated by `fitaci` automatically. It is however an option to fix the transition point (via the `citransition` argument), which may be helpful to check whether the best fit was achieved. Finally, the user can provide an estimate of mesophyll conductance (g~m~) (following [@ethier2004]), in which case the fitted values of V~cmax~ and J~max~ can be interpreted as chloroplastic rates.
 
 \
-Required inputs are measurements of A~n~ and C~i~, and optionally leaf temperature (T~leaf~), and photosynthetically active radiation (PAR). Also required are estimates of Michaelis-Menten constants (K~c~, K~o~ or the combination K~m~) and $\Gamma^{*}$, if these are not available they are estimated from T~leaf~ with standard methods [@medlyn2002].
+Because the fitting uses non-linear least squares, standard methods can be employed to estimate standard errors (SE), confidence intervals, and correlation of the fitted parameters. The fitaci function returns by default the SE and confidence intervals, and the built-in help page for the fitaci function shows how the nlstools package can be used to provide a detailed overview of the statistics of the non-linear least squares fit.
 
-In the FvCB model, J~max~, V~cmax~ and leaf respiration (R~d~) (and other parameters like $\Gamma^{*}$, K~c~ and K~o~) all depend non-linearly on T~leaf~. The `Photosyn` function incorporates standard temperature sensitivities for all parameters of the FvCB model (following [@medlyn2002]). Optionally, measured (or otherwise modelled) K~m~ and $\Gamma^{*}$ can be provided as input.
+\
+Required inputs are measurements of A~n~ and C~i~, and optionally leaf temperature (T~leaf~), and photosynthetically active radiation (PAR). Also required are estimates of Michaelis-Menten constants (K~c~, K~o~ or the combination K~m~) and $\Gamma^{*}$. In the FvCB model, J~max~, V~cmax~ and leaf respiration (R~d~) (and other parameters like $\Gamma^{*}$, K~c~ and K~o~) all depend non-linearly on T~leaf~. The `Photosyn` function incorporates standard temperature sensitivities for all parameters of the FvCB model (following [@medlyn2002]). Optionally, measured (or otherwise modelled) K~m~ and $\Gamma^{*}$ can be provided as input.
 
 \
 The function takes a dataframe as input, which includes measurements of A~n~, C~i~ and optionally T~leaf~ and PAR, and is easily used like this:
@@ -189,12 +189,13 @@ The output of the above example is shown in Fig. 2. Additionally, the batch util
 
 ```{r eval=TRUE, echo=FALSE, message=FALSE}
 acidata1$PPFD <- 1800
-f <- suppressWarnings(fitaci(acidata1))
+myfit <- suppressWarnings(fitaci(acidata1))
+fitc <- myfit$pars
 ```
 
 
 \
-**Figure 2**. Standard output from the `fitaci` function. A~n~ is the net photosynthetic rate, C~i~ the intercellular CO~2~ concentration. Symbols are measurements, the black line the fitted FvCB model of photosynthesis. Colored lines indicate the two photosynthesis rates in the FvCB model. In the default mode, the `fitaci` function estimates V~cmax~, J~max~ and R~d~ from the fitted curve. Optionally, R~d~ is provided as an input, for example when it was measured separately. In this example, V~cmax~ was estimated as `r round(coef(f)[1],1)`, J~max~ was `r round(coef(f)[2],1)` and R~d~ was `r round(coef(f)[3],1)` (all in units of $\mu$mol m^-2^ s^-1^).
+**Figure 2**. Standard output from the `fitaci` function. A~n~ is the net photosynthetic rate, C~i~ the intercellular CO~2~ concentration. Symbols are measurements, the black line the fitted FvCB model of photosynthesis. Colored lines indicate the two photosynthesis rates in the FvCB model. In the default mode, the `fitaci` function estimates V~cmax~, J~max~ and R~d~ from the fitted curve. Optionally, R~d~ is provided as an input, for example when it was measured separately. In this example, V~cmax~ was estimated as `r round(fitc["Vcmax","Estimate"],1)` (SE `r round(fitc["Vcmax","Std. Error"],2)`), J~max~ was `r round(fitc["Jmax","Estimate"],1)` (SE `r round(fitc["Jmax","Std. Error"],2)`) and R~d~ was `r round(fitc["Rd","Estimate"],1)` (SE `r round(fitc["Rd","Std. Error"],2)`) (all in units of $\mu$mol m^-2^ s^-1^).
 
 
 \
@@ -240,7 +241,7 @@ The `Photosyn` function assumes that the boundary layer conductance (g~bl~) is h
 The `FARAO` function (FARquhar And Optimality) calculates optimal stomatal conductance based on the Cowan-Farquhar hypothesis. It finds the C~i~ for which the quantity $A - \lambda E$ is maximal, and then calculates corresponding A~n~ and g~s~, thus avoiding the specification of an f(D) function as in Eq. 4. This implementation was used by Medlyn et al. [@medlyn2011] to compare a simplified model of optimal stomatal conductance to the full numerical solution. In Fig. 4a, I have calculated $A - \lambda E$ across a range of C~i~ values, and for different values of D. The `FARAO` function calculates the optima of these curves, which can for example be used to study the response of stomatal conductance to D (Fig. 4b).
 
 \
-**Figure 4**. Visualization of the optimal model of stomatal conductance. Provided we have an estimate of the 'cost of water' ($\lambda$, mol C mol H~2~O^-1^), stomata act to maximize photosynthesis minus transpiration. In (a), individual curves at a range of values for the vapour pressure deficit (D) plots $A-\lambda E$ versus the C~i~, demonstrating that an optimum exists. The `FARAO` function finds this optimum numerically and calculates A~n~ and g~s~. The corresponding response of g~s~ to D is shown in panel (b).
+**Figure 4**. Visualization of the optimal model of stomatal conductance. Provided we have an estimate of the 'cost of water' ($\lambda$, mol C mol H~2~O^-1^), stomata act to maximize photosynthesis minus transpiration. In (a), individual curves at a range of values for the vapour pressure deficit (D) are plots of $A-\lambda E$ as a function of C~i~, demonstrating that an optimum C~i~ exists. The `FARAO` function finds this optimum numerically and calculates corresponding A~n~ and g~s~. The corresponding response of g~s~ to D is shown in panel (b).
 
 \
 Optionally, the `FARAO` function accounts for the presence of a leaf boundary layer (when `energybalance=TRUE`). In that case it uses `PhotosynEB` (see description above) to calculate A~n~ and E, and solves for T~leaf~. A very similar method was employed by Buckley et al. [@buckley2014], who demonstrated that when a boundary layer is present, frequently an optimal g~s~ cannot be found.
@@ -301,7 +302,7 @@ We need an open source set of tools to analyze leaf gas exchange data, as these 
 
 
 # Acknowledgments {.unnumbered}
-David Ellsworth, Belinda Medlyn and Martin de Kauwe are acknowledged for discussions on fitting A-C~i~ curves. Special thanks to Belinda Medlyn whose code in the MAESTRA model provided the basis for an early version of the Photosyn function. Thanks to John Drake for testing. 
+David Ellsworth, Belinda Medlyn and Martin De Kauwe are acknowledged for discussions on fitting A-C~i~ curves. Special thanks to Belinda Medlyn for the code in the MAESTRA model which provided the basis for an early version of the Photosyn function, and for sharing the data used in the example application. Thanks to John Drake and Nick Smith for testing and suggesting new features.
 
 
 
