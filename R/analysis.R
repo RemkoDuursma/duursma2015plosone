@@ -1,12 +1,16 @@
 
-# Download data needed for Figure 5.
-tum <- read.csv("TumbarumbaGasex_ACis_Medlyn.csv")
+
+# Read data for Figure 5.
+# See : http://figshare.com/articles/Tumbarumba_Gas_Exchange/1538079
+
+# See load.R for code to download the data to the cache/ subdirectory.
+
+# A-Ci curve data
+tum <- read.csv(acifn)
 tumh <- subset(tum, PARi > 1400)
 
-# lin <- read.csv("http://files.figshare.com/1886204/WUEdatabase_merged_Lin_et_al_2015_NCC.csv")
-# tumspot <- subset(lin, Datacontrib == "Belinda Medlyn")
-# saveRDS(tumspot, "tumspot.rds")
-tumspot <- readRDS("tumspot.rds")
+# Spot gas exchange data
+tumspot <- read.csv(spotfn)
 
 
 # Fit A-Ci curves for Figure 5.
@@ -38,3 +42,4 @@ p <- coef(acifits)
 lmjv <- lm(Jmax ~ Vcmax, data=p)
 lmjvt <- tidy(lmjv)
 lmjvg <- glance(lmjv)
+
