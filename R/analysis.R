@@ -26,8 +26,7 @@ if(!file.exists(cf)){
 }
 
 # Fit BB model to spot gas exchange data for Figure 5.
-gfit <- fitBB(tumspot, gsmodel="BBOpti",varnames=list(ALEAF="Photo",GS="Cond",VPD="VPD",
-                                                          Ca="CO2S"))
+gfit <- fitBB(tumspot, gsmodel="BBOpti")
 tumspot$GSpred <- predict(gfit$fit, tumspot)
 g1 <- coef(gfit)[[2]]
 g1ci <- suppressMessages(unname(confint(gfit$fit)))
