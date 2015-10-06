@@ -144,7 +144,7 @@ figure4 <- function(){
        ylim=c(-1,10),
        xlim=c(0,400),
        xlab=expression(italic(C)[i]~~(ppm)),
-       ylab=expression(A-lambda*E~~(mu*mol~m^-2~s^-1)))
+       ylab=expression(A[n]-lambda*E~~(mu*mol~m^-2~s^-1)))
   for(i in 1:length(vpds))addcurve(vpds[i], pch=21, bg=Cols[i], cex=1.2)
   plotlabel("(a)","bottomleft")
   legend("topleft", c(expression(italic(D) == 0.5*kPa),expression(italic(D) == 3.5*kPa)),
