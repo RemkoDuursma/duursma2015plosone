@@ -182,22 +182,30 @@ figure5 <- function(){
   predline(lm(Jmax ~ Vcmax, data=coef(acifits)))
   plotlabel("(b)", "topleft")
   
-  with(tumspot, plot(GSpred, Cond, xlim=c(0,0.6), ylim=c(0,0.6),
+  with(tumspot_1, plot(GSpred, Cond, xlim=c(0,0.6), ylim=c(0,0.6),
                      xlab=expression(Modelled~g[s]~~(mol~m^-2~s^-1)),
                      ylab=expression(Measured~g[s]~~(mol~m^-2~s^-1)),
                      pch=19, col=alpha("black",0.3)))
+  with(tumspot_2, points(GSpred, Cond, pch=19, col=alpha("red",0.3)))
   abline(0,1)
   plotlabel("(c)", "topleft")
   
-  with(subset(tumspot,PARi > 1000), 
-       {plot(VpdL, Photo/Trmmol,
+  with(subset(tumspot_1,PARi > 1000), {
+        plot(VpdL, Photo/Trmmol,
                     xlab="D (kPa)",
                     xlim=c(0,3), ylim=c(0,14),
                     ylab=expression(ITE~~(mu*mol~CO[2]/mmol~H[2]*O)),
                     pch=19, col=alpha("black",0.3))
-        curve(0.1*mean(CO2S)/(1.6*(g1*sqrt(x) + x)), add=TRUE,
+        curve(0.1*mean(CO2S)/(1.6*(g1_1*sqrt(x) + x)), add=TRUE,
           from=min(VpdL), to=max(VpdL))
        })
+  with(subset(tumspot_2,PARi > 1000), {
+    points(VpdL, Photo/Trmmol,
+         pch=19, col=alpha("red",0.3))
+    curve(0.1*mean(CO2S)/(1.6*(g1_2*sqrt(x) + x)), add=TRUE,
+          from=min(VpdL), to=max(VpdL))
+  })
+  
   plotlabel("(d)", "topleft")
   
 }

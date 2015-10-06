@@ -215,7 +215,7 @@ The intersection of the supply and demand curves of photosynthesis (Fig. 1b) giv
 To demonstrate the use of the coupled gas exchange model, I visualize the temperature response of A~n~ when both T~leaf~ and D are varying. In field conditions, D is always strongly positively related to T~leaf~. The consequence is that when studying D or T~leaf~ responses in the field, both drivers have to be accounted for simultaneously [@lin2012; @duursma2014]. Figure 3a shows simulated A-C~i~ curves and the solutions of the coupled leaf gas exchange models at a range of T~leaf~ and corresponding D (calculated following [@duursma2014]). Figure 3b shows the output from `Photosyn`, which can be created with the following example. Note that in this example the default values of many parameters (e.g. J~max~, g~1~) are used in the call to `Photosyn`, but all of these can be set by the user.
 
 \
-**Figure 3**. Response of A~n~ and C~i~ to combined changes in T~leaf~ and D. (a) Lines are A-C~i~ curves simulated at a range of values for T~leaf~. Symbols are the solutions of the coupled leaf gas exchange model, while also taking into account the correlation between D and T~leaf~ (based on an empirical relationship [@duursma2014]). Note that as T~leaf~ and D increase, C~i~ decreases. (b) The corresponding temperature optimum of A~n~. Symbols are the same as in panel (a) but plotted against T~leaf~.
+**Figure 3**. Response of A~n~ and C~i~ to combined changes in T~leaf~ and D. (a) Lines are A-C~i~ curves simulated at a range of values for T~leaf~. Symbols are the solutions of the coupled leaf gas exchange model, while also taking into account the correlation between D and T~leaf~ (based on an empirical relationship [@duursma2014] : D = 0.000605*T~air~^2.39^). Note that as T~leaf~ and D increase, C~i~ decreases. (b) The corresponding temperature optimum of A~n~. Symbols are the same as in panel (a) but plotted against T~leaf~.
 
 
 ```
@@ -234,7 +234,7 @@ with(run1, plot(Tleaf, ALEAF))
 ```
 
 \
-The `Photosyn` function assumes that the boundary layer conductance (g~bl~) is high compared to g~s~, so that T~leaf~ is close to T~air~. As an alternative, the `PhotosynEB` function calculates T~leaf~ from the leaf energy balance. Transpiration is calculated with the Penman-Monteith equation, which accounts for boundary layer effects. The details of `PhotosynEB` are not described here (see the built in help file for more information), because it is very similar to other implementations [@wang1998; @buckley2014]. 
+The `Photosyn` function assumes that the boundary layer conductance (g~bl~) is high compared to g~s~, so that T~leaf~ is close to T~air~. As an alternative, the `PhotosynEB` function calculates T~leaf~ from the leaf energy balance. Transpiration is calculated with the Penman-Monteith equation [@jones1992], which accounts for boundary layer effects. The details of `PhotosynEB` are not described here (see the built in help file for more information), because it is very similar to other implementations [@wang1998; @buckley2014]. 
 
 
 ### Numerical solution of optimal stomatal conductance
@@ -250,10 +250,24 @@ Optionally, the `FARAO` function accounts for the presence of a leaf boundary la
 
 ### An example application
 
-To demonstrate a practical application of the key functions in the package, I use field-collected data from Medlyn et al. [-@medlyn2007, @medlynfigshare] on *Eucalyptus delegatensis*. Both A-C~i~ curves and 'spot gas exchange' data (i.e. leaf gas exchange measurements at prevailing environmental conditions) were collected. Using the `fitacis` function, it is straightforward to fit all `r length(acifits)` curves to the A-C~i~ data, and make standard plots of the fitted curves (shown in Fig. 5a). The fitted coefficients are easily extracted, and used to plot a standard comparison of fitted V~cmax~ and J~max~ values (Fig. 5b), which show the typical correlation between the two. 
+To demonstrate a practical application of the key functions in the package, I use field-collected data from Medlyn et al. [-@medlyn2007, @medlynfigshare] on *Eucalyptus delegatensis*. Both A-C~i~ curves and 'spot gas exchange' data (i.e. leaf gas exchange measurements at prevailing environmental conditions) were collected. Using the `fitacis` function, it is straightforward to fit all `r length(acifits)` curves to the A-C~i~ data, and make standard plots of the fitted curves (shown in Fig. 5a). The fitted coefficients can be extracted using the `coef` function, and used to plot a comparison of fitted V~cmax~ and J~max~ values, which show the typical correlation between the two (Fig. 5b).
 
 \
-Next, I fit Eq. 4 to the spot gas exchange data, yielding an estimate of g~1~ (Fig. 5c). It is straightforward to compare modelled to measured g~s~ (Fig. 5c), and compare the model prediction of instantaneous transpiration efficiency (A~n~/E) to measurements along the variation in D (Fig. 5d). Because `fitBB` can fit a number of Ball-Berry type variants, the various models can be easily compared in terms of goodness of fit. This simple example application is available in the published repository (see Methods), and simplified code for this example (panels a-c only), omitting special formatting and a few minor settings, is given below.
+Next, I fit Eq. 4 to the spot gas exchange data, yielding an estimate of g~1~ (Fig. 5c). In this example, I used the model of Medlyn et al. [@medlyn2011], which is given by Eq. 6 (in this example, I assumed g~0~ = 0)
+
+\
+(6)
+$$ g_s = g_0 + 1.6(1 + \frac{g_1}{\sqrt(D)})\frac{A_n}{C_a}$$
+
+
+In Fig. 5c, modelled g~s~ is compared to measurements (Fig. 5c). To compare the model prediction of instantaneous transpiration efficiency (A~n~/E) to measurements along the variation in D (Fig. 5d), Eq. 6 can be rearranged to give (cf. [@duursma2013], where it is assumed that g~0~ = 0)
+
+\
+(7)
+$$A_n/E = \frac{C_a P_a}{1.6 (g_1 D_s^k + D_s)}$$
+
+
+Because `fitBB` can fit a number of Ball-Berry type variants, the various models can be easily compared in terms of goodness of fit. This simple example application is available in the published repository (see Methods), and simplified code for this example (panels a-c only), omitting special formatting and a few minor settings, is given below.
 
 ```
 # Fit A-Ci curves. 
@@ -283,7 +297,7 @@ with(tumspot, plot(GSpred, Cond))
 
 # Conclusions
 
-We need an open source set of tools to analyse leaf gas exchange data, as these data form a cornerstone of plant physiological ecology. At the moment there are no publicly available tools to fit A-C~i~ curves that can be used as part of a reproducable workflow. The plantecophys R package is implemented in widely used language for data analysis. The package includes a useful set of tools to perform standard, and more advanced, analyses of leaf gas exchange data. The open source framework combined with version control allows further development of the code. 
+We need an open source set of tools to analyse leaf gas exchange data, as these data form a cornerstone of plant physiological ecology. At the moment there are no publicly available tools to fit A-C~i~ curves or perform simulations with the coupled leaf gas exchange model that can be used as part of a reproducable workflow. The plantecophys R package is implemented in widely used language for data analysis. The package includes a useful set of tools to perform standard, and more advanced, analyses of leaf gas exchange data. The open source framework combined with version control allows further development of the code. 
 
 
 
