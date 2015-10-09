@@ -162,7 +162,7 @@ figure4 <- function(){
   
 
 
-figure5 <- function(){
+figure5 <- function(acifits, tumspot){
   
   # (a)
   par(mfrow=c(2,2), mar=c(4,4,1,1), cex=1.1, xaxs="i", yaxs="i",las=1,
@@ -195,7 +195,7 @@ figure5 <- function(){
                     xlim=c(0,3), ylim=c(0,14),
                     ylab=expression(ITE~~(mu*mol~CO[2]/mmol~H[2]*O)),
                     pch=19, col=alpha("black",0.3))
-        curve(0.1*mean(CO2S)/(1.6*(g1_1*sqrt(x) + x)), add=TRUE,
+        curve(0.1*mean(CO2S)/(1.6*(g1*sqrt(x) + x)), add=TRUE,
           from=min(VpdL), to=max(VpdL))
        })
   
