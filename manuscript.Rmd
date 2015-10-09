@@ -40,16 +40,25 @@ if(file.exists(rep_pkg)){
 } else {
   cur_sha <- "???"
 }
+# 
+# # Some summaries of stats for Figure 5.
+# gfit <- fitBB(tumspot, gsmodel="BBOpti")
+# tumspot$GSpred <- predict(gfit$fit, tumspot)
+# g1 <- coef(gfit)[[2]]
+# g1ci <- suppressMessages(unname(confint(gfit$fit)))
+# 
+# lmgpred <- lm(Cond ~ GSpred, data=tumspot)
+# lmgpredt <- tidy(lmgpred)
+# lmgpredg <- glance(lmgpred)
+# 
+# # Regression of Jmax vs. Vcmax (used in caption for Figure 5).
+# p <- coef(acifits)
+# lmjv <- lm(Jmax ~ Vcmax, data=p)
+# lmjvt <- tidy(lmjv)
+# lmjvg <- glance(lmjv)
 
-# Analysis for Figure 5.
-source("R/analysis.R")
+acifits <- readRDS("cache/acifits.rds")
 
-# Make PDFs
-source("R/make_figures.R")
-
-# This document can be compiled with the 'Knit Word' button in Rstudio, or:
-# library(rmarkdown)
-# render("manuscript.Rmd", "word_document", "manuscript.docx")
 ```
 
 
@@ -289,10 +298,6 @@ gfit <- fitBB(tumspot, gsmodel="BBOpti")
 tumspot$GSpred <- predict(gfit$fit, tumspot)
 with(tumspot, plot(GSpred, Cond))
 ```
-
-
-\
-**Figure 5**. Example application of the plantecophys package to A-C~i~ curves and spot gas exchange measurements on *Eucalyptus delegatensis* (data can be downloaded from [@medlynfigshare]) (a) Fitted A-C~i~ curves with one curve highlighted (b) Estimates of J~max~ plotted against V~cmax~, obtained from the fitted curves in panel (a). Solid line is a regression line (J~max~ = `r round(lmjvt$estimate[1],2)` + `r signif(lmjvt$estimate[2],2)` V~cmax~, R^2^ = `r signif(lmjvg$r.squared,2)`) with a 95% confidence interval for the mean. (c) Modelled (with the model of Medlyn et al. 2011) versus measured g~s~ (p `r pval(lmgpredg$p.value)`, R^2^ = `r signif(lmgpredg$r.squared,2)`). Measurements included a wide range of environmental conditions (PAR, T~leaf~, D). In this example, only g~1~ was fit (estimate = `r signif(g1,3)`, 95% CI = `r paste(signif(g1ci,3), collapse=" - ")`). (d) The predicted response of ITE (A~n~ / E) as a function of D from the fitted model in panel (c) (solid line), and the measurements from panel (c) when PAR > 1000.
 
 
 

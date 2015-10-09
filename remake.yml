@@ -1,0 +1,65 @@
+packages:
+  - broom
+  - reporttools
+  - ascii
+  - plantecophys
+  - rmarkdown
+  - knitr
+  
+sources:
+  - R
+  
+plot_options:
+  smallsquare:
+    width: 4
+    height: 4
+  largesquare:
+    width: 8
+    height: 8
+  wide:
+    width: 8
+    height: 4
+
+targets:
+  all:
+    depends:
+      - manuscript.docx
+
+  manuscript.docx:
+    command: make_ms("manuscript.Rmd")
+    depends: 
+      - figures
+  
+  figures:
+    depends:
+      - output/figure1.pdf
+      - output/figure2.pdf
+      - output/figure3.pdf
+      - output/figure4.pdf
+
+  
+  output/figure1.pdf: 
+    command: figure1()
+    plot: wide
+  
+  output/figure2.pdf:
+    command: figure2()
+    plot: smallsquare
+  
+  output/figure3.pdf:
+    command: figure3()
+    plot: wide
+  
+  output/figure4.pdf:
+    command: figure4()
+    plot: wide
+
+  
+  acifits:
+    command: fit_medlynacicurves("download/MedlynAci.csv")
+    
+  download/MedlynAci.csv:
+    download: "http://files.figshare.com/2256196/TumbarumbaGasex_ACis_Medlyn.csv"
+    cleanup_level: purge
+    check: exists
+    

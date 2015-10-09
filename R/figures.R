@@ -1,7 +1,4 @@
 # Figures
-source("R/functions.R")
-library(plantecophys)
-
 
 figure1 <- function(){
   
@@ -83,9 +80,6 @@ figure3 <- function(){
     with(r1, lines(Ci, ALEAF, type='l', col=linecol, lwd=2))
     
     r2 <- Photosyn(Ca=400, VPD=vpd, Tleaf=tair)
-    #   gc <- r2$GS / 1.57
-    #   ablinepiece(gc*r2$Ca, -gc,  col="darkgrey",
-    #               from=r2$Ci, to=r2$Ca)
     points(r2$Ci, r2$ALEAF, pch=21, ...)
     
   }
@@ -103,10 +97,7 @@ figure3 <- function(){
                                   cex=1.2,  bg=Cols[i])
   box()
   plotlabel("(a)","topleft")
-#   for(i in 1:(nrow(p)-1)){
-#     arrows(x0=p$Ci[i], x1=p$Ci[i+1], y0=p$ALEAF[i], y1=p$ALEAF[i+1],
-#            col=Cols[i], length=0.15)
-#   }
+
   legend("left", c(expression(T[leaf] == 5),
                       expression(T[leaf] == 40)),
          lty=1, lwd=2, col=Cols[c(1,length(tairs))], bty='n', cex=0.8)
@@ -162,7 +153,7 @@ figure4 <- function(){
   
 
 
-figure5 <- function(){
+figure5 <- function(acifits, tumspot){
   
   # (a)
   par(mfrow=c(2,2), mar=c(4,4,1,1), cex=1.1, xaxs="i", yaxs="i",las=1,
@@ -173,6 +164,7 @@ figure5 <- function(){
   box()
   plotlabel("(a)", "topleft")
   
+  # (b)
   with(coef(acifits), plot(Vcmax, Jmax,
                            xlab=expression(V[cmax]~~(mu*mol~m^-2~s^-1)),
                            ylab=expression(J[max]~~(mu*mol~m^-2~s^-1)),
@@ -182,6 +174,7 @@ figure5 <- function(){
   predline(lm(Jmax ~ Vcmax, data=coef(acifits)))
   plotlabel("(b)", "topleft")
   
+  # (c)
   with(tumspot, plot(GSpred, Cond, xlim=c(0,0.6), ylim=c(0,0.6),
                      xlab=expression(Modelled~g[s]~~(mol~m^-2~s^-1)),
                      ylab=expression(Measured~g[s]~~(mol~m^-2~s^-1)),
@@ -189,6 +182,7 @@ figure5 <- function(){
   abline(0,1)
   plotlabel("(c)", "topleft")
   
+  # (d)
   with(subset(tumspot,PARi > 1000), {
         plot(VpdL, Photo/Trmmol,
                     xlab="D (kPa)",
