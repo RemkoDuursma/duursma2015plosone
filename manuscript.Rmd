@@ -31,15 +31,8 @@ Email: r.duursma@westernsydney.edu.au
 # Load packages and custom functions
 source("R/load.R")
 
-# Find current SHA of plantecophys
-rep_pkg <- "c:/repos/plantecophys"
-if(file.exists(rep_pkg)){
-  pkgrep <- repository(rep_pkg)
-  r <- reflog(pkgrep, verbose=FALSE)
-  cur_sha <- substr(r[[1]]@sha, 1, 7)
-} else {
-  cur_sha <- "???"
-}
+# Find current SHA of plantecophys (gives '???' on fail)
+cur_sha <- get_git_SHA("c:/repos/plantecophys")
 
 # Analysis for Figure 5.
 source("R/analysis.R")
