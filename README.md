@@ -10,8 +10,7 @@ This repository contains the code to generate the figures and manuscript for thi
 
 To compile the entire manuscript, including references, and figures (not embedded but written to the subdirectory `output`), run:
 
-```
-#!r
+```r
 rmarkdown::render("manuscript.Rmd", "word_document", "manuscript.docx")
 ```
 
@@ -19,8 +18,7 @@ This assumes you have the `rmarkdown` package installed, as well as Pandoc (but 
 
 To compile the figures only (as PDF), run the following commands.
 
-```
-#!r
+```r
 source("R/load.R")
 source("R/analysis.R")
 source("R/make_figures.R")
@@ -28,8 +26,7 @@ source("R/make_figures.R")
 
 The `load.R` script will attempt to install missing packages, except `plantecophys`, because this repository depends on version 0.6.6 (or higher), which is not yet available on CRAN (but it soon will be). Install the dev version via,
 
-```
-#!r
+```r
 devtools::install_bitbucket("remkoduursma/plantecophys")
 ```
 
