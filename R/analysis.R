@@ -5,22 +5,20 @@
 
 # See load.R for code to download the data to the cache/ subdirectory.
 
-# A-Ci curve data
+# A-Ci curve data (see load.R)
 tum <- read.csv(acifn)
 tumh <- subset(tum, PARi > 1400)
 
-# Spot gas exchange data
+# Spot gas exchange data (see load.R)
 tumspot <- read.csv(spotfn)
-
 tumspot$Date <- as.Date(tumspot$Date, format="%d/%m/%Y")
 tumspot$Season <- factor(format(tumspot$Date, "%m-%Y"))
 
-# Choose only one season (the one with the best fit, of course)
-# tumspot <- subset(tumspot, Season %in% c("11-2001","05-2002"))
+# Discard first season as it has a very different g1 (and g0).
 tumspot <- subset(tumspot, Season %in% c("11-2001","05-2002"))
 
 # Fit A-Ci curves for Figure 5.
-# poor curves (no saturation)
+# First remove these poor curves (no saturation)
 bad <- c("12","18","39")
 
 cf <- "cache/acifits.rds"
@@ -46,4 +44,10 @@ p <- coef(acifits)
 lmjv <- lm(Jmax ~ Vcmax, data=p)
 lmjvt <- tidy(lmjv)
 lmjvg <- glance(lmjv)
+
+
+
+
+
+
 

@@ -12,6 +12,12 @@ myfit <- fitaci(acidata1)
 # Show the usual output, including parameter estimates and confidence intervals.
 summary(myfit)
 
+# A summary of the underlying non-linear least-squares fit can be printed with,
+summary(myfit$nlsfit)
+
+# ... from which the RMSE can be easily extracted.
+summary(myfit$nlsfit)$sigma
+
 # Correlation matrix of estimated Jmax, Vcmax and Rd from fitted A-Ci curve.
 # Example given for one curve fitted above.
 getCorMat_aci <- function(fit){

@@ -43,6 +43,9 @@ source("R/make_figures.R")
 # This document can be compiled with the 'Knit Word' button in Rstudio, or:
 # library(rmarkdown)
 # render("manuscript.Rmd", "word_document", "manuscript.docx")
+# which assumes you have Pandoc installed (unless you run this from Rstudio),
+# and that you have an internet connection.
+
 ```
 
 
@@ -72,7 +75,7 @@ $$A_n = min(A_c, A_j) - R_d$$
 where A~n~ is the net rate of CO~2~ assimulation, A~c~ is the gross photosynthesis rate when Rubisco activity is limiting, A~j~ when RuBP-regeneration is limiting, and R~d~ the rate of dark respiration (see Fig. 1a). A~c~ and A~j~ are non-linear functions of the chloroplastic CO~2~ concentration (C~c~), both of the form $k_1(C_c{\Gamma}^{∗})/(k_2 + C_c)$, where ${\Gamma}^{∗}$ is the CO~2~ compensation point without R~d~, and k~1~ and k~2~ are different parameter combinations for A~c~ and A~j~. The details of these functions and the temperature dependence of the various parameters are described elsewhere [@medlyn2002]. 
 
 \
-In the practical application of the FvCB model, it is often assumed that C~c~ is equal to the intercellular [CO~2~] concentration (C~i~), which is useful because C~i~ can be estimated from leaf gas exchange data [@sharkey1982], and it avoids the need to estimate the conductance from intercellular airspaces to the chloroplast (mesophyll conductance, g~m~). In the remainder of this article I will use C~c~ as the driver of photosynthesis, but point out that this can be replaced by C~i~ if the user does not have an estimate of g~m~. When g~m~ is known, C~c~ is calculated from C~i~ with Eq. 2. 
+In the practical application of the FvCB model, when leaf gas exchange is measured with a portable gas exchange instrument, estimates of C~c~ are difficult to obtain because they require an estimate of the mesophyll conductance. In this case, it is customary to us the intercellular [CO~2~] concentration (C~i~) as the driver of photosynthesis. This approach is useful because C~i~ can be estimated from concurrent measurements of CO~2~ and H~2~O flux [@sharkey1982]. In the remainder of this article I will use C~c~ as the driver of photosynthesis, but point out that this can be replaced by C~i~ if the user does not have an estimate of g~m~. When this is is known, C~c~ is calculated from C~i~ with Eq. 2. 
 
 \
 (2)
@@ -182,15 +185,15 @@ The output of the above example is shown in Fig. 2. Additionally, the batch util
 
 
 ```{r eval=TRUE, echo=FALSE, message=FALSE}
+# acidata1 is an example dataset in plantecophys (see ?acidata1)
 acidata1$PPFD <- 1800
-myfit <- suppressWarnings(fitaci(acidata1))
-fitc <- myfit$pars
+exfit1 <- suppressWarnings(fitaci(acidata1))
+fitc <- exfit1$pars
 ```
 
 
 \
-**Figure 2**. Standard output from the `fitaci` function. A~n~ is the net photosynthetic rate, C~i~ the intercellular CO~2~ concentration. Symbols are measurements, the black line the fitted FvCB model of photosynthesis. Colored lines indicate the two photosynthesis rates in the FvCB model. In the default mode, the `fitaci` function estimates V~cmax~, J~max~ and R~d~ from the fitted curve. Optionally, R~d~ is provided as an input, for example when it was measured separately. In this example, V~cmax~ was estimated as `r round(fitc["Vcmax","Estimate"],1)` (SE `r round(fitc["Vcmax","Std. Error"],2)`), J~max~ was `r round(fitc["Jmax","Estimate"],1)` (SE `r round(fitc["Jmax","Std. Error"],2)`) and R~d~ was `r round(fitc["Rd","Estimate"],1)` (SE `r round(fitc["Rd","Std. Error"],2)`) (all in units of $\mu$mol m^-2^ s^-1^).
-
+**Figure 2**. Standard output from the `fitaci` function. A~n~ is the net photosynthetic rate, C~i~ the intercellular CO~2~ concentration. Symbols are measurements, the black line the fitted FvCB model of photosynthesis. Colored lines indicate the two photosynthesis rates in the FvCB model. In the default mode, the `fitaci` function estimates V~cmax~, J~max~ and R~d~ from the fitted curve. Optionally, R~d~ is provided as an input, for example when it was measured separately. In this example, V~cmax~ was estimated as `r round(fitc["Vcmax","Estimate"],1)` (SE `r round(fitc["Vcmax","Std. Error"],2)`), J~max~ was `r round(fitc["Jmax","Estimate"],1)` (SE `r round(fitc["Jmax","Std. Error"],2)`) and R~d~ was `r round(fitc["Rd","Estimate"],1)` (SE `r round(fitc["Rd","Std. Error"],2)`). Assumed parameters were K~m~ = `r round(exfit1$Km,0)` and $\Gamma}^{∗}$ = `r round(exfit1$GammaStar,1)` (all in units of $\mu$mol m^-2^ s^-1^). The R^2^ of a regression of measured vs. fitted was 0.99.
 
 \
 A C4 model of leaf photosynthesis [@caemmerer2000] is also implemented (in `AciC4`), but at the moment it is only possible to fit the C3 model of leaf photosynthesis to A-C~i~ curves. 
@@ -205,11 +208,12 @@ The straightforward `fitBB` function provides an interface to non-linear or line
 The intersection of the supply and demand curves of photosynthesis (Fig. 1b) gives the steady-state intercellular CO~2~ concentration (C~i~). This is solved by the `Photosyn` function. This flexible interface can be used to either 1) estimate A~n~ when C~i~ is known (`Photosyn(Ci=...)`, equivalent to `Aci(...)`), 2) estimate A~n~ when g~s~ is known (`Photosyn(GS=...)`) (cf. Fig. 1b) or c) solve for C~i~ from the coupled leaf gas exchange model (Eqs. 1,3,4). 
 
 \
-To demonstrate the use of the coupled gas exchange model, I visualize the temperature response of A~n~ when both T~leaf~ and D are varying. In field conditions, D is always strongly positively related to T~leaf~. The consequence is that when studying D or T~leaf~ responses in the field, both drivers have to be accounted for simultaneously [@lin2012; @duursma2014]. Figure 3a shows simulated A-C~i~ curves and the solutions of the coupled leaf gas exchange models at a range of T~leaf~ and corresponding D (calculated following [@duursma2014]). Figure 3b shows the output from `Photosyn`, which can be created with the following example. Note that in this example the default values of many parameters (e.g. J~max~, g~1~) are used in the call to `Photosyn`, but all of these can be set by the user.
+To demonstrate the use of the coupled gas exchange model, I visualize the temperature response of A~n~ when both T~leaf~ and D are varying. In field conditions, D is always strongly positively related to T~leaf~. The consequence is that when studying D or T~leaf~ responses in the field, both drivers have to be accounted for simultaneously [@lin2012; @duursma2014]. Figure 3a shows simulated A-C~i~ curves and the solutions of the coupled leaf gas exchange models at a range of T~leaf~ and corresponding D (calculated following [@duursma2014]). Both V~cmax~ and J~max~ have a peaked response to T~leaf~, so that at a given C~i~, A~n~ first increases with T~leaf and then decreases (lines, Fig. 3a). As a result of increasing D, the modelled C~i~ decreases (symbols, Fig. 3a). The net result is a peaked response of A~n~ as a function of D (Fig. 3b).
 
 \
 **Figure 3**. Response of A~n~ and C~i~ to combined changes in T~leaf~ and D. (a) Lines are A-C~i~ curves simulated at a range of values for T~leaf~. Symbols are the solutions of the coupled leaf gas exchange model, while also taking into account the correlation between D and T~leaf~ (based on an empirical relationship [@duursma2014] : D = 0.000605*T~air~^2.39^). Note that as T~leaf~ and D increase, C~i~ decreases. (b) The corresponding temperature optimum of A~n~. Symbols are the same as in panel (a) but plotted against T~leaf~.
 
+The simplified code to produce Figure 3b, using the `Photosyn` function, is given below. Note that in this example the default values of many parameters (e.g. J~max~, g~1~) are used in the call to `Photosyn`, but all of these can be set by the user.
 
 ```
 # Set range of leaf temperature

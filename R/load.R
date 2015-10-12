@@ -10,8 +10,8 @@ Library(ascii)
 
 # mine
 Library(plantecophys)
-if(packageVersion("plantecophys") < "0.6.5")
-  stop("Please install plantecophys 0.6.5 or newer, if needed from www.bitbucket.org/remkoduursma/plantecophys")
+if(packageVersion("plantecophys") < "0.6.6")
+  stop("Please install plantecophys 0.6.6 or newer, if needed from www.bitbucket.org/remkoduursma/plantecophys")
 
 # use git
 Library(git2r)
