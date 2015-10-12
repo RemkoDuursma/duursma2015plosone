@@ -1,5 +1,6 @@
 
 # plantecophys - an R package for analysing and modelling leaf gas exchange data
+[![DOI](https://zenodo.org/badge/11128/RemkoDuursma/duursma2015plosone.svg)](https://zenodo.org/badge/latestdoi/11128/RemkoDuursma/duursma2015plosone)
 
 This repository contains the code to generate the figures and manuscript for this paper:
 
