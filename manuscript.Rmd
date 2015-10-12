@@ -29,7 +29,7 @@ Email: r.duursma@westernsydney.edu.au
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Load packages and custom functions
-source("R/load.R")
+source("load.R")
 
 # Find current SHA of plantecophys (gives '???' on fail)
 cur_sha <- get_git_SHA("c:/repos/plantecophys")

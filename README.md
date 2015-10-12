@@ -19,7 +19,7 @@ This assumes you have the `rmarkdown` package installed, as well as Pandoc (but 
 To compile the figures only (as PDF), run the following commands.
 
 ```r
-source("R/load.R")
+source("load.R")
 source("R/analysis.R")
 source("R/make_figures.R")
 ```

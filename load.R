@@ -21,7 +21,8 @@ Library(downloader)
 
 
 # figures
-source("figures.R")
+# (Script with figure definitions, does not make PDFs)
+source("R/figures.R")
 
 # output
 if(!dir.exists("output"))dir.create("output")
