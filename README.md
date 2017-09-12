@@ -4,8 +4,7 @@
 
 This repository contains the code to generate the figures and manuscript for this paper:
 
-**Duursma, R.A. plantecophys - an R package for analysing and modelling leaf gas exchange data. PlosONE.**
-
+Duursma, R.A., 2015. Plantecophys - An R Package for Analysing and Modelling Leaf Gas Exchange Data. PLoS ONE 10, e0143346. [doi:10.1371/journal.pone.0143346](). (Open Access)
 
 ## Instructions
 
@@ -25,11 +24,7 @@ source("R/analysis.R")
 source("R/make_figures.R")
 ```
 
-The `load.R` script will attempt to install missing packages, except `plantecophys`, because this repository depends on version 0.6.6 (or higher), which is not yet available on CRAN (but it soon will be). Install the dev version via,
-
-```r
-devtools::install_bitbucket("remkoduursma/plantecophys")
-```
+The `load.R` script will attempt to install missing packages from CRAN automatically.
 
 - An example script that shows how to extract additional statistics from fitted A-Ci curves is given in the file `R/more_stats_acicurvefit.R`.
 
